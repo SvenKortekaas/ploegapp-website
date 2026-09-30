@@ -87,7 +87,7 @@ jobs:
         run: node scripts/dekking.js
 
       - name: Issue bij een nieuwe functie zonder uitleg
-        if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request' && hashFiles('.tmp/dekking.md') != ''
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && hashFiles('.tmp/dekking.md') != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -98,7 +98,7 @@ jobs:
 
       # Alleen de gebouwde site gaat mee; .app/ en .beelden/ niet
       - uses: actions/upload-pages-artifact@v4
-        if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: uit
 
@@ -112,7 +112,7 @@ jobs:
   publiceren:
     name: Publiceren op GitHub Pages
     needs: bouwen
-    if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     permissions:
       pages: write
