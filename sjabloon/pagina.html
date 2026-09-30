@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>{{paginatitel}}</title>
+<meta name="description" content="{{beschrijving}}">
+<link rel="icon" href="{{pad}}favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{pad}}style.css">
+</head>
+<body>
+<a class="naar-inhoud" href="#inhoud">Naar de inhoud</a>
+<header class="kop">
+  <div class="breed kop-binnen">
+    <a class="logo" href="{{pad}}index.html" aria-label="Ploegapp, naar de voorpagina">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path fill="#fff" d="M16.5 5c.9 3.8-2.6 5.6-2.6 8.8 0 1.6 1.1 2.8 2.6 2.8 1.7 0 2.7-1.4 2.4-3.4 2.3 1.8 3.5 4.4 3.5 6.8 0 4.3-3 7.6-6.7 7.6s-6.7-3.3-6.7-7.6C9 14.8 15.4 12.4 16.5 5z"/></svg>
+      <span>Ploegapp</span>
+    </a>
+    <nav aria-label="Hoofdmenu">
+      <ul>
+{{menu}}
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="inhoud">
+{{inhoud}}
+</main>
+<footer class="voet">
+  <div class="breed voet-binnen">
+    <p><b>Ploegapp</b>: beschikbaarheid en oefenplanning voor brandweerploegen.</p>
+    <p>Alle namen, korpsen en gegevens op deze site zijn verzonnen. De screenshots zijn automatisch gemaakt van de nieuwste versie van de app, bijgewerkt op {{bijgewerkt}}.</p>
+    <p>Deze site gebruikt geen cookies, trackers of externe diensten. <a href="{{pad}}over.html">Over deze site en privacy</a></p>
+  </div>
+</footer>
+</body>
+</html>

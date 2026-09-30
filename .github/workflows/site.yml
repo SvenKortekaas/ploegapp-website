@@ -1,0 +1,128 @@
+# Bouwt en publiceert ploegapp.nl.
+#  1. Haalt de nieuwste versie van de (privé) app op met een alleen-lezen token. De app komt NOOIT
+#     in deze repo of in de gepubliceerde site: hij staat alleen tijdelijk op de runner in .app/.
+#  2. Start de app met een lege database, vult die met fictieve gegevens en maakt screenshots.
+#  3. Bouwt de statische site en controleert hem: geen cookies, geen scripts, geen externe verzoeken,
+#     alleen html/css/png/svg/txt.
+#  4. Alleen vanaf main: publiceren naar GitHub Pages.
+# Mislukt een stap, dan blijft de vorige versie van de site gewoon online.
+#
+# Eenmalig nodig: secret PLOEGAPP_LEES_TOKEN (fine-grained token, alleen de repo ploegapp,
+# alleen "Contents: read"). Zie README.md.
+name: Site bouwen en publiceren
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *' # elke nacht: nieuwste app, verse screenshots (datums in de voorbeelden lopen mee)
+  repository_dispatch:
+    types: [app-bijgewerkt] # optioneel: de app-repo kan dit sturen na een uitrol
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bouwen:
+    name: Screenshots, bouwen en controleren
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write   # issue bij een nieuwe functie zonder uitleg
+      actions: write  # geplande run actief houden (zie laatste stap)
+    steps:
+      - uses: actions/checkout@v5
+
+      # Vangnet: er mag nooit code van de app in deze publieke repo staan
+      - name: Geen app-code in deze repo
+        run: |
+          if git ls-files | grep -E '^(\.app/|server\.js$|lib/|routes/|public/|test/|test-e2e/|Dockerfile$|fly\.toml$)'; then
+            echo "::error::Bovenstaande bestanden horen bij de app en mogen niet in deze repo staan."
+            exit 1
+          fi
+
+      - name: Token aanwezig?
+        env:
+          TOKEN: ${{ secrets.PLOEGAPP_LEES_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Secret PLOEGAPP_LEES_TOKEN ontbreekt (zie README.md, 'Eenmalig instellen')."
+            exit 1
+          fi
+
+      - name: Nieuwste app ophalen (alleen op de runner, niet in de repo)
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/ploegapp
+          token: ${{ secrets.PLOEGAPP_LEES_TOKEN }}
+          path: .app
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Afhankelijkheden
+        run: |
+          npm ci --no-audit --no-fund
+          npm ci --prefix .app --omit=dev --no-audit --no-fund --silent
+
+      - name: Screenshots maken (fictieve gegevens)
+        run: npm run screenshots
+
+      - name: Site bouwen
+        run: npm run bouw
+
+      - name: Controleren (privacy, links, opmaak)
+        env:
+          VERBODEN_WOORDEN: ${{ secrets.VERBODEN_WOORDEN }}
+        run: npm run controleer
+
+      - name: Staan alle functies van de app op de site?
+        run: node scripts/dekking.js
+
+      - name: Issue bij een nieuwe functie zonder uitleg
+        if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request' && hashFiles('.tmp/dekking.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITEL="Nieuwe functie(s) in de app zonder uitleg op de site"
+          NR=$(gh issue list --state open --search "$TITEL in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$NR" ]; then gh issue edit "$NR" --body-file .tmp/dekking.md
+          else gh issue create --title "$TITEL" --body-file .tmp/dekking.md; fi
+
+      # Alleen de gebouwde site gaat mee; .app/ en .beelden/ niet
+      - uses: actions/upload-pages-artifact@v4
+        if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request'
+        with:
+          path: uit
+
+      # GitHub zet geplande runs in publieke repo's uit na 60 dagen zonder activiteit; dit houdt ze aan
+      - name: Geplande run actief houden
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/site.yml/enable" || true
+
+  publiceren:
+    name: Publiceren op GitHub Pages
+    needs: bouwen
+    if: github.ref_name == github.event.repository.default_branch && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.uitrol.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: uitrol
+        uses: actions/deploy-pages@v4

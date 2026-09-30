@@ -1,0 +1,19 @@
+{
+  "name": "ploegapp-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Voorlichtingssite ploegapp.nl: statische HTML met screenshots op fictieve gegevens",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "screenshots": "node scripts/screenshots.js",
+    "bouw": "node scripts/bouw.js",
+    "controleer": "node scripts/controleer.js",
+    "alles": "npm run screenshots && npm run bouw && npm run controleer",
+    "bekijk": "node scripts/bekijk.js"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1"
+  }
+}

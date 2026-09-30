@@ -1,0 +1,7 @@
+# De app wordt tijdens het bouwen opgehaald en mag NOOIT in deze (publieke) repo komen
+.app/
+node_modules/
+# Gebouwde site en tijdelijke screenshots
+uit/
+.beelden/
+.tmp/
