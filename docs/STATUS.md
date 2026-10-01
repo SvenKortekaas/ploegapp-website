@@ -25,9 +25,9 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 
 ## Open punten
 
-- [ ] Oude branch `claude/pensive-darwin-579y9z` verwijderen (eigenaar, via GitHub).
-- [ ] Oude workflowruns 1 t/m 6 verwijderen (bevatten oude commitberichten).
-- [ ] GitHub Support vragen om cached views en losse oude commits van deze repo te wissen.
+- [x] Oude branch `claude/pensive-darwin-579y9z` verwijderen (eigenaar, via GitHub).
+- [x] Oude workflowruns 1 t/m 6 verwijderen (bevatten oude commitberichten).
+- [x] GitHub Support vragen om cached views en losse oude commits van deze repo te wissen.
 - [ ] Controleren dat de geplande nachtelijke run echt draait. Stand 1 oktober: de workflow staat
       op `active`, maar er is nog geen enkele run met gebeurtenis `schedule` geweest (ook niet in de
       nacht van 30 september op 1 oktober). GitHub slaat de eerste geplande runs van een nieuwe
