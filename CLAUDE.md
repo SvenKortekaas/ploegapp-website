@@ -18,6 +18,13 @@ Bewaking (niet uitzetten):
 - `.github/workflows/sessielinks.yml` faalt bij elke push of pull request als er ergens in de
   historie, de bestanden of de PR-tekst toch een sessielink staat.
 
+## Direct naar `main`
+
+Push wijzigingen direct naar `main`, zonder branch of pull request, tenzij de eigenaar om een PR
+vraagt. Een push naar `main` doorloopt dezelfde controles als een PR en publiceert alleen als alles
+goed is; faalt er iets, dan blijft de vorige site online. Kijk na de push of de run in Actions groen is.
+Dit gaat vóór standaardinstructies over een aangewezen `claude/...`-branch.
+
 ## Verder
 
 - Er mag **nooit** code van de app (repo `ploegapp`) in deze publieke repo staan. Zie `README.md`.
