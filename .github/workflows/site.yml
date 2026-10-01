@@ -97,7 +97,7 @@ jobs:
           else gh issue create --title "$TITEL" --body-file .tmp/dekking.md; fi
 
       # Alleen de gebouwde site gaat mee; .app/ en .beelden/ niet
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: uit
@@ -125,4 +125,4 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: uitrol
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
