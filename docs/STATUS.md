@@ -33,6 +33,8 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       nacht van 30 september op 1 oktober). GitHub slaat de eerste geplande runs van een nieuwe
       workflow vaker over. Kijk in Actions of er na 2 oktober 03:17 UTC een run "schedule" staat;
       zo niet, dan een tweede tijdstip toevoegen of het schema op `main` opnieuw opslaan.
+- [ ] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
+      Daarna de open pull requests van Dependabot laten hercontroleren en mergen als ze groen zijn.
 - [ ] Beveiligingsinstellingen van de repo en het account zetten (eigenaar; README, "Eenmalig instellen" stap 5).
 - [ ] DNSSEC aanzetten bij Cloud86 en het domein verifiëren in GitHub (eigenaar; stap 6). Stand
       1 oktober: geen DNSSEC, en `_github-pages-challenge-svenkortekaas.ploegapp.nl` heeft geen TXT-record.

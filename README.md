@@ -66,6 +66,9 @@ De app zelf heeft zijn eigen afhankelijkheden nodig (`npm ci --omit=dev` in de a
 
    Zet hem in deze repo onder Settings → Secrets and variables → Actions → *New repository secret*,
    met de naam `PLOEGAPP_LEES_TOKEN`.
+   Zet **hetzelfde token** ook onder Settings → Secrets and variables → **Dependabot**, met dezelfde
+   naam. Runs van Dependabot krijgen de gewone secrets niet; zonder deze kopie falen de controles op
+   de pull requests van Dependabot meteen bij "Token aanwezig?".
 2. **Optioneel: verboden woorden.** Secret `VERBODEN_WOORDEN` met komma-gescheiden woorden die nooit
    op de site mogen staan (bijvoorbeeld echte namen of de echte korpsnaam). De controle keurt de site
    dan af als een van die woorden erin staat. Het staat in een secret, zodat de lijst zelf niet publiek is.
