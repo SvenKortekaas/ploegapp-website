@@ -1,0 +1,12 @@
+#!/bin/sh
+# Haalt links naar Claude-sessies en "Claude-Session"-regels uit het commitbericht (zie CLAUDE.md).
+bestand="$1"
+patroon='claude[.]ai/code/session|Claude-[Ss]ession:'
+if grep -qE "$patroon" "$bestand"; then
+  grep -vE "$patroon" "$bestand" > "$bestand.tmp"
+  # Lege regels aan het eind weghalen
+  sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$bestand.tmp" > "$bestand"
+  rm -f "$bestand.tmp"
+  echo "commit-msg: sessielink uit het commitbericht gehaald (zie CLAUDE.md)." >&2
+fi
+exit 0

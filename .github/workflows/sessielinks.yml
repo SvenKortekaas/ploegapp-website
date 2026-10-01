@@ -1,0 +1,41 @@
+# Bewaking: nergens links naar Claude-sessies (zie CLAUDE.md).
+# Kijkt naar alle commitberichten in de historie, alle bestanden en de tekst van een pull request.
+name: Geen sessielinks
+
+on:
+  push:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  controle:
+    name: Geen sessielinks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Commitberichten, bestanden en PR-tekst
+        env:
+          PR_TITEL: ${{ github.event.pull_request.title }}
+          PR_TEKST: ${{ github.event.pull_request.body }}
+        run: |
+          # Het patroon is zo geschreven dat het zichzelf niet vindt
+          patroon='claude[.]ai/code/session|Claude-[Ss]ession:'
+          fout=0
+          if git log --all --format='%H %B' | grep -E "$patroon"; then
+            echo "::error::Sessielink in een commitbericht (zie hierboven). Herschrijf de historie; zie CLAUDE.md."
+            fout=1
+          fi
+          if git grep -nE "$patroon"; then
+            echo "::error::Sessielink in een bestand (zie hierboven)."
+            fout=1
+          fi
+          if printf '%s\n%s\n' "$PR_TITEL" "$PR_TEKST" | grep -E "$patroon"; then
+            echo "::error::Sessielink in de titel of beschrijving van de pull request."
+            fout=1
+          fi
+          exit $fout
