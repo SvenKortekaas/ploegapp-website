@@ -13,7 +13,7 @@
  *   -->
  * In de tekst:
  *   [[telefoon naam | onderschrift]]   screenshot in een telefoonrand (.beelden/naam.png)
- *   [[tv naam | onderschrift]]         breed screenshot (kazernescherm)
+ *   [[breed naam | onderschrift]]      screenshot van een groot scherm (kazernescherm, indeelbord)
  */
 
 const fs = require('node:fs');
@@ -56,13 +56,16 @@ function main() {
     const bron = path.join(BEELDEN, `${naam}.png`);
     if (!fs.existsSync(bron)) throw new Error(`Screenshot "${naam}" bestaat niet (wordt gemaakt in scripts/screenshots.js)`);
     gebruikt.add(naam);
-    const [b, h] = soort === 'tv' ? [1280, 720] : [390, 844];
+    // Afmetingen uit de PNG zelf; telefoonbeelden zijn op dubbele resolutie gemaakt
+    const png = fs.readFileSync(bron);
+    const schaal = soort === 'telefoon' ? 2 : 1;
+    const [b, h] = [png.readUInt32BE(16) / schaal, png.readUInt32BE(20) / schaal];
     const alt = onderschrift || naam;
-    return `<figure class="${soort}"><div class="scherm"><img src="beelden/${naam}.png" width="${b}" height="${h}" alt="Screenshot: ${esc(alt)}" loading="lazy" decoding="async"></div>${onderschrift ? `<figcaption>${esc(onderschrift)}</figcaption>` : ''}</figure>`;
+    return `<figure class="${soort === 'telefoon' ? 'telefoon' : 'tv'}"><div class="scherm"><img src="beelden/${naam}.png" width="${b}" height="${h}" alt="Screenshot: ${esc(alt)}" loading="lazy" decoding="async"></div>${onderschrift ? `<figcaption>${esc(onderschrift)}</figcaption>` : ''}</figure>`;
   }
 
   for (const p of paginas) {
-    const inhoud = p.tekst.replace(/\[\[(telefoon|tv)\s+([\w-]+)\s*(?:\|\s*([^\]]*?))?\s*\]\]/g, (_, soort, naam, ond) => beeld(soort, naam, ond));
+    const inhoud = p.tekst.replace(/\[\[(telefoon|breed)\s+([\w-]+)\s*(?:\|\s*([^\]]*?))?\s*\]\]/g, (_, soort, naam, ond) => beeld(soort, naam, ond));
     if (/\[\[/.test(inhoud)) throw new Error(`${p.bestand}: onbekende [[...]]-code`);
     const menuHtml = menu
       .map((m) => `        <li><a href="${m.bestand}"${m.bestand === p.bestand ? ' aria-current="page"' : ''}>${esc(m.menutekst || m.titel)}</a></li>`)

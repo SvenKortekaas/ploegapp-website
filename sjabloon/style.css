@@ -211,3 +211,23 @@ details[open] summary { border-bottom: 1px solid var(--rand); margin-bottom: 12p
 .blok.compact { padding: 32px 0; }
 h2.ruim { margin-top: 40px; }
 h3.ruim { margin-top: 28px; }
+
+/* Inhoudsopgave bovenaan Functies */
+.inhoudsopgave { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.inhoudsopgave h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--rood); }
+.inhoudsopgave ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.inhoudsopgave a { color: var(--tekst); text-decoration: none; font-weight: 600; }
+.inhoudsopgave a:hover { color: var(--rood); text-decoration: underline; }
+@media (max-width: 760px) {
+  .inhoudsopgave { grid-template-columns: 1fr; }
+}
+
+/* Groepskop boven een reeks functies */
+h2.groep { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rood); margin-bottom: 0; }
+
+/* Functie met een breed beeld (laptop, tv): tekst boven, beeld eronder over de volle breedte */
+.functie.breed-beeld { grid-template-columns: 1fr; gap: 24px; }
+.functie.breed-beeld > div:first-child { max-width: 760px; }
+.duo .tv figcaption { margin-top: 8px; }
+.stap.breed-beeld { grid-template-columns: 1fr; gap: 24px; }
+.stap.breed-beeld > div:first-child { max-width: 760px; }

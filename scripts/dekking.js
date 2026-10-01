@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Staat elke functie van de app op de site? Leest de kopjes onder "Wat kan het?" in de README van de
+ * Staat elke functie van de app op de site? Leest de onderdelen en functies onder "Wat kan de app?" in de README van de
  * app (alleen die lijst, niets anders) en vergelijkt ze met inhoud/dekking.json.
  *
  * Ontbreekt er iets, dan schrijft dit script .tmp/dekking.md (voor een GitHub-issue) en geeft het een
@@ -15,13 +15,18 @@ const { APP_PAD } = require('./voorbeeld');
 
 const WORTEL = path.join(__dirname, '..');
 const readme = fs.readFileSync(path.join(APP_PAD, 'README.md'), 'utf8');
-const sectie = readme.split(/^## Wat kan het\?\s*$/m)[1]?.split(/^## /m)[0];
+// De kop heette eerst "Wat kan het?", nu "Wat kan de app?"; daaronder ### per onderdeel
+const sectie = readme.split(/^## Wat kan (?:het|de app)\?\s*$/m)[1]?.split(/^## /m)[0];
 if (!sectie) {
-  console.log('::warning::Geen "## Wat kan het?" in de README van de app gevonden; dekking niet gecontroleerd.');
+  console.log('::warning::Geen "## Wat kan de app?" in de README van de app gevonden; dekking niet gecontroleerd.');
   process.exit(0);
 }
 
-const functies = [...sectie.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].replace(/:$/, '').trim());
+// Elk lijstpunt dat met een vetgedrukte titel begint, plus elk onderdeel (###)
+const functies = [
+  ...[...sectie.matchAll(/^### (.+)$/gm)].map((m) => `Onderdeel: ${m[1].trim()}`),
+  ...[...sectie.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].replace(/:$/, '').trim()),
+];
 const dekking = JSON.parse(fs.readFileSync(path.join(WORTEL, 'inhoud', 'dekking.json'), 'utf8'));
 const ontbreekt = functies.filter((f) => !dekking[f]);
 

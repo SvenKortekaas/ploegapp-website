@@ -103,6 +103,8 @@ async function main() {
           // Alle afbeeldingen laden (ook lazy) en controleren
           await p.evaluate(() => document.querySelectorAll('img').forEach((i) => (i.loading = 'eager')));
           await p.waitForLoadState('networkidle');
+          // Wachten tot elke afbeelding klaar is (geladen of mislukt), hooguit 10 seconden
+          await p.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 10000 }).catch(() => {});
           const kapot = await p.$$eval('img', (imgs) => imgs.filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')));
           for (const k of kapot) fout(`${f}: afbeelding laadt niet: ${k}`);
           const zonderAlt = await p.$$eval('img:not([alt])', (x) => x.length);

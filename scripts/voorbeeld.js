@@ -81,6 +81,7 @@ async function startApp() {
     cwd: APP_PAD,
     env: {
       PATH: process.env.PATH,
+      SCHOOLVAKANTIES_OFFLINE: '1', // geen verbinding naar buiten: de meegeleverde kopie
       HOME: map,
       TZ: 'Europe/Amsterdam',
       PORT: String(poort),
@@ -157,14 +158,19 @@ async function vul(basis, beheerToken) {
     naam: 'Reddingsboot', roepnummer: 'RB-1', soort: 'vaartuig', vervoer: 'lopend',
     plaatsen: { [functie.SCH]: 1 }, overig: 2, omschrijving: 'Ligt in de haven naast de kazerne',
   });
+  await api('/voertuigen', 'POST', {
+    naam: 'Motorspuitaanhanger', roepnummer: 'MSA', soort: 'aanhanger', trekker_id: ts.id, omschrijving: 'Voor waterwinning op afstand',
+  });
   const alle = await api('/voertuigen');
   const boot = alle.find((v) => v.roepnummer === 'RB-1');
   const ts2 = alle.find((v) => v.roepnummer === '99-4532');
+  const msa = alle.find((v) => v.roepnummer === 'MSA');
 
   await api('/instellingen', 'PUT', {
     standaard_locatie: 'Kazerne Duinwijk',
     kazerne_aan: true,
     kazerne_namen: true,
+    kazerne_kop: 'Oefenavond Duinwijk',
   });
 
   // Oefenavonden
@@ -205,8 +211,20 @@ async function vul(basis, beheerToken) {
     });
   }
 
-  // Over 4 dagen: goed bezet, ingedeeld en gepubliceerd
-  const komend = await plan(dag(4), [ademlucht('Jeroen'), beknelling('Anouk')]);
+  // Vanavond: ingedeeld en gepubliceerd (het kazernescherm toont dan de avond groot)
+  const vanavond = await plan(dag(0), [
+    { onderwerp: 'Binnenbrand woning', voertuig_ids: [ts.id], oefenleider_ids: [id('Jesse')] },
+    { onderwerp: 'Verkeersongeval', voertuig_ids: [ts2.id] },
+  ]);
+  await antwoorden(vanavond, [
+    ...ja(['Karin', 'Anouk', 'Chris', 'Dirk', 'Eva', 'Fleur', 'Gijs', 'Hanna', 'Ivo', 'Jeroen', 'Kim', 'Lars', 'Niels', 'Roos']),
+    ['Bas', 'nee'], ['Mila', 'nee'],
+  ]);
+  await api(`/avonden/${vanavond.id}/indeling/automatisch`, 'POST', {});
+  await api(`/avonden/${vanavond.id}/publiceer`, 'POST', { melden: false });
+
+  // Over 4 dagen: goed bezet, ingedeeld en gepubliceerd (met melding: die staat op de meldingenpagina)
+  const komend = await plan(dag(4), [ademlucht('Jeroen'), beknelling('Anouk')], { melden: true });
   await antwoorden(komend, [
     ...ja(['Karin', 'Bas', 'Chris', 'Dirk', 'Fleur', 'Gijs', 'Hanna', 'Ivo', 'Jesse', 'Kim', 'Lars', 'Niels', 'Pim', 'Sem']),
     ['Eva', 'ja', 'Iets later, rond 19:45'],
@@ -214,13 +232,20 @@ async function vul(basis, beheerToken) {
     ['Olga', 'nee'],
   ]);
   await api(`/avonden/${komend.id}/indeling/automatisch`, 'POST', {});
-  await api(`/avonden/${komend.id}/publiceer`, 'POST', { melden: false });
+  await api(`/avonden/${komend.id}/publiceer`, 'POST', {});
+  // Voorbereiding: twee van de standaardpunten afgevinkt, één eigen punt erbij
+  {
+    const a = await api(`/avonden/${komend.id}`);
+    const oef = a.oefeningen.find((o) => o.naam === 'Ademlucht binnenbrand');
+    for (const v of (oef.voorbereiding || []).slice(0, 2)) await api(`/voorbereiding/${v.id}`, 'PUT', { gedaan: true });
+    await api(`/oefeningen/${oef.id}/voorbereiding`, 'POST', { tekst: 'Rookmachine lenen bij de buurpost' });
+  }
 
   // Over 11 dagen: varen en pompen, nog niet iedereen heeft gereageerd (Bas nog niet)
   const varen = await plan(dag(11), [
     { onderwerp: 'Varen en redden uit het water', voertuig_ids: [boot.id], oefenleider_ids: [id('Gijs')] },
-    { onderwerp: 'Pompbediening en waterwinning', voertuig_ids: [ts.id] },
-  ]);
+    { onderwerp: 'Pompbediening en waterwinning', voertuig_ids: [msa.id] }, // de TS trekt de MSA
+  ], { melden: true });
   await antwoorden(varen, [
     ...ja(['Jeroen', 'Anouk', 'Chris', 'Gijs', 'Hanna', 'Ivo', 'Mila', 'Niels', 'Olga']),
     ['Fleur', 'misschien'], ['Lars', 'misschien'], ['Roos', 'misschien'],
@@ -228,15 +253,17 @@ async function vul(basis, beheerToken) {
   ]);
 
   // Over 18 dagen: net gepland, nog weinig reacties
-  const gs = await plan(dag(18), [{ onderwerp: 'Gevaarlijke stoffen', voertuig_ids: [ts.id], oefenleider_ids: [id('Jesse')] }]);
+  const gs = await plan(dag(18), [{ onderwerp: 'Gevaarlijke stoffen', voertuig_ids: [ts.id], oefenleider_ids: [id('Jesse')] }], { melden: true });
   await antwoorden(gs, [...ja(['Jesse', 'Anouk', 'Hanna']), ['Kim', 'misschien']]);
 
   // Afwezigheid (zonder reden: die vraagt de app bewust niet)
   await api('/afwezigheid', 'POST', { lid_id: id('Dirk'), van: dag(8), tot: dag(22) });
   await api('/afwezigheid', 'POST', { lid_id: id('Kim'), van: dag(10), tot: dag(13) });
+  // Drukke dagen: vier leden van ploeg 1 tegelijk weg (de standaardgrens is drie)
+  for (const naam of ['Eva', 'Hanna', 'Fleur']) await api('/afwezigheid', 'POST', { lid_id: id(naam), van: dag(15), tot: dag(17) });
 
   const inst = await api('/instellingen');
-  return { maand: dag(11).slice(0, 7), nieuweDatum: dag(25), leden, avonden: { komend: komend.id, varen: varen.id, gs: gs.id }, kazerneSleutel: inst.kazerne_sleutel };
+  return { maand: dag(11).slice(0, 7), nieuweDatum: dag(25), leden, avonden: { vanavond: vanavond.id, komend: komend.id, varen: varen.id, gs: gs.id }, kazerneSleutel: inst.kazerne_sleutel };
 }
 
 /** Vangnet: alleen doorgaan als er uitsluitend fictieve gegevens in de app staan. */

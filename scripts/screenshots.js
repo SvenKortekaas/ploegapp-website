@@ -40,14 +40,15 @@ async function main() {
     await controleerFictief(app.basis, app.token);
 
     /** Telefoon van een (fictief) lid. Zonder naam: niet ingelogd. */
-    async function telefoon(naam, { iphone = false, donker = false } = {}) {
+    async function telefoon(naam, { iphone = false, donker = false, breed = false, opslag = {} } = {}) {
       const context = await browser.newContext({
         locale: 'nl-NL',
         timezoneId: 'Europe/Amsterdam',
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 2,
-        isMobile: true,
-        hasTouch: true,
+        // Telefoon (390 breed, scherp op retina) of een groot scherm (laptop/tv)
+        viewport: breed ? { width: 1280, height: 800 } : { width: 390, height: 844 },
+        deviceScaleFactor: breed ? 1 : 2,
+        isMobile: !breed,
+        hasTouch: !breed,
         colorScheme: donker ? 'dark' : 'light',
         userAgent: iphone ? IPHONE : undefined,
         serviceWorkers: 'block',
@@ -61,6 +62,8 @@ async function main() {
       if (naam) {
         // Installatievraag al "gezien", behalve waar we hem juist willen laten zien
         if (!iphone) await context.addInitScript(() => { try { localStorage.setItem('geinstalleerd', '1'); } catch {} });
+        // Voorkeuren die de app op het toestel onthoudt (bijv. de weergave van het indelen)
+        await context.addInitScript((o) => { try { for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v); } catch {} }, opslag);
         await p.goto(`${app.basis}/?t=${g.leden[naam].token}`);
         await p.waitForSelector('#tabbalk:not([hidden])');
         await p.waitForLoadState('networkidle');
@@ -91,6 +94,7 @@ async function main() {
     }
 
     const { komend, varen } = g.avonden;
+    const kaartMet = (tekst) => `.kaart:has-text("${tekst}")`;
 
     // --- Lid (Bas, chauffeur)
     {
@@ -106,6 +110,9 @@ async function main() {
       await foto(p, 'lid-rooster');
       await ga(p, '#/ik', '#app .kaart');
       await foto(p, 'lid-ik');
+      await foto(p, 'lid-mijn-oefeningen', { scroll: kaartMet('Mijn oefeningen') });
+      await ga(p, '#/meldingen', '#app');
+      await foto(p, 'lid-meldingen');
       await p.context().close();
     }
 
@@ -137,13 +144,12 @@ async function main() {
     {
       const p = await telefoon('Jeroen');
       await p.waitForSelector('.kaart');
-      await foto(p, 'planner-overzicht');
       await ga(p, `#/avond/${varen}`, '.oefening');
       await foto(p, 'planner-bezetting');
       await ga(p, `#/avond/${komend}/indeling`, '#auto');
       await foto(p, 'planner-indeling');
       await ga(p, `#/avond/${komend}`, '.oefening');
-      await foto(p, 'planner-avond', { scroll: '.oefening' });
+      await foto(p, 'planner-voorbereiding', { scroll: '.voorbereiding' });
       await ga(p, '#/beheer/plannen', '#avond-form');
       // Half ingevuld, zoals een planner hem ziet tijdens het plannen
       await p.fill('input[name="datum"]', g.nieuweDatum);
@@ -154,6 +160,21 @@ async function main() {
       const vorige = await p.$eval('a[href$="/presentie"], a[href^="#/avond/"]', (a) => a.getAttribute('href').match(/\d+/)[0]);
       await ga(p, `#/avond/${vorige}/presentie`, '#opslaan');
       await foto(p, 'planner-presentie');
+      await ga(p, '#/beheer/onderwerpen', '#onderwerp-lijsten .onderwerp-rij');
+      await foto(p, 'planner-onderwerpen');
+      // Als laatste: na het aanvinken vraagt de app bij weggaan of je je invoer kwijt wilt
+      await ga(p, '#/beheer/importeren', '#sjabloon');
+      await p.check('#sjabloon input[name="vakantie"]');
+      await p.waitForLoadState('networkidle');
+      await foto(p, 'planner-jaarplanning');
+      await p.context().close();
+    }
+
+    // --- Indeelbord op een groot scherm
+    {
+      const p = await telefoon('Jeroen', { breed: true, opslag: { 'indeling-weergave': 'bord' } });
+      await ga(p, `#/avond/${komend}/indeling`, '.bord-samenvatting');
+      await foto(p, 'planner-bord');
       await p.context().close();
     }
 
@@ -167,24 +188,36 @@ async function main() {
       await ga(p, '#/beheer/functies', '#beheer');
       await foto(p, 'beheer-functies');
       await ga(p, '#/beheer/leden', '#nieuw-lid');
-      await foto(p, 'beheer-leden');
+      // Links versturen: wie heeft zijn link al, wie is ingelogd
+      // Twee links "op een andere manier gegeven" afvinken, zodat alle drie de standen te zien zijn
+      for (const naam of ['Anouk', 'Chris']) {
+        await p.locator('#links-versturen li', { hasText: naam }).locator('[data-verstuurd]').check();
+        await p.waitForLoadState('networkidle');
+      }
+      await foto(p, 'beheer-links', { scroll: '#links-versturen' });
+      // Leden uit Excel plakken (verzonnen namen), eerst controleren
+      await p.locator('#leden-import summary').click();
+      await p.fill('#leden-plak', 'Roepnaam\tPloeg\tFuncties\tRol\nTom\tPloeg 1\tCH\t\nWillem\tPloeg 2\t\t\nYara\tPloeg 2\tBV, CH\tplanner');
+      await p.click('#leden-controleer');
+      await p.waitForSelector('#leden-controle :is(table, .kaart, ul, p)');
+      await foto(p, 'beheer-leden-import', { scroll: '#leden-import' });
       await ga(p, '#/beheer/instellingen', '#inst');
       await foto(p, 'beheer-instellingen');
       await p.context().close();
     }
 
-    // --- Kazernescherm (tv)
-    {
+    // --- Kazernescherm (tv): vanavond groot in beeld, en het overzicht van de komende avonden
+    for (const [naam, weergave] of [['kazernescherm', ''], ['kazernescherm-overzicht', 'overzicht']]) {
       const context = await browser.newContext({ locale: 'nl-NL', timezoneId: 'Europe/Amsterdam', viewport: { width: 1280, height: 720 } });
       const p = await context.newPage();
       p.fouten = [];
       p.on('pageerror', (e) => p.fouten.push(e.message));
-      await p.goto(`${app.basis}/kazerne?k=${encodeURIComponent(g.kazerneSleutel)}`);
+      await p.goto(`${app.basis}/kazerne?k=${encodeURIComponent(g.kazerneSleutel)}${weergave ? `&weergave=${weergave}` : ''}`);
       await p.waitForLoadState('networkidle');
       await p.waitForTimeout(300);
-      if (p.fouten.length) throw new Error(`kazernescherm: ${p.fouten.join('; ')}`);
-      await p.screenshot({ path: path.join(UIT, 'kazernescherm.png'), animations: 'disabled' });
-      gemaakt.push('kazernescherm');
+      if (p.fouten.length) throw new Error(`${naam}: ${p.fouten.join('; ')}`);
+      await p.screenshot({ path: path.join(UIT, `${naam}.png`), animations: 'disabled' });
+      gemaakt.push(naam);
       await context.close();
     }
 
