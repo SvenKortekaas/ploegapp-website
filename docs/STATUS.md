@@ -28,7 +28,15 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 - [ ] Oude branch `claude/pensive-darwin-579y9z` verwijderen (eigenaar, via GitHub).
 - [ ] Oude workflowruns 1 t/m 6 verwijderen (bevatten oude commitberichten).
 - [ ] GitHub Support vragen om cached views en losse oude commits van deze repo te wissen.
-- [ ] Keuze automatisch bijwerken van teksten bij een nieuwe README van de app:
-      1. automatische pagina "Alles op een rij" uit de README, en/of
-      2. Claude in GitHub Actions die een pull request maakt (Anthropic API-sleutel nodig).
-- [ ] Controleren dat de geplande nachtelijke run echt draait (de eerste nacht draaide hij niet).
+- [ ] Controleren dat de geplande nachtelijke run echt draait. Stand 1 oktober: de workflow staat
+      op `active`, maar er is nog geen enkele run met gebeurtenis `schedule` geweest (ook niet in de
+      nacht van 30 september op 1 oktober). GitHub slaat de eerste geplande runs van een nieuwe
+      workflow vaker over. Kijk in Actions of er na 2 oktober 03:17 UTC een run "schedule" staat;
+      zo niet, dan een tweede tijdstip toevoegen of het schema op `main` opnieuw opslaan.
+
+## Besloten
+
+- Teksten worden **niet** automatisch bijgewerkt bij een nieuwe README van de app (geen automatische
+  pagina, geen Claude in Actions). Het issue "Nieuwe functie(s) in de app zonder uitleg op de site"
+  blijft het signaal; de tekst wordt met de hand (of in een Claude-sessie) aangevuld. Zo komt er geen
+  tekst uit de privé-repo ongezien op de publieke site.
