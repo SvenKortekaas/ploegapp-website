@@ -10,6 +10,8 @@
  *    JavaScript-fouten, geen kapotte interne links of afbeeldingen.
  * 4. Geen verboden woorden (bv. echte namen). De lijst komt uit de omgevingsvariabele
  *    VERBODEN_WOORDEN (komma-gescheiden, in CI een GitHub-secret), zodat hij zelf niet publiek is.
+ * 5. Elke pagina heeft de Content-Security-Policy en het referrer-beleid uit het sjabloon, en geen
+ *    on...=-, style=-attributen, <base> of doorverwijzing.
  */
 
 const fs = require('node:fs');
@@ -20,6 +22,7 @@ const { chromium } = require('playwright-core');
 const UIT = path.join(__dirname, '..', 'uit');
 const TOEGESTAAN = new Set(['.html', '.css', '.png', '.svg', '.txt']);
 const TOEGESTANE_NAMEN = new Set(['.nojekyll']);
+const CSP = "default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'";
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.txt': 'text/plain' };
 
 const fouten = [];
@@ -68,6 +71,14 @@ async function main() {
     }
     if (/<script\b/i.test(tekst)) fout(`${f}: bevat een <script>`);
     if (/<(iframe|form|object|embed)\b/i.test(tekst)) fout(`${f}: bevat een iframe, formulier of embed`);
+    if (f.endsWith('.html')) {
+      // De beveiligingsregels uit het sjabloon moeten op elke pagina staan, precies zo
+      if (!tekst.includes(`<meta http-equiv="Content-Security-Policy" content="${CSP}">`)) fout(`${f}: Content-Security-Policy ontbreekt of is veranderd`);
+      if (!tekst.includes('<meta name="referrer" content="no-referrer">')) fout(`${f}: referrer-beleid ontbreekt`);
+      if (/\son[a-z]+\s*=/i.test(tekst)) fout(`${f}: bevat een on...=-attribuut (JavaScript)`);
+      if (/\sstyle\s*=/i.test(tekst)) fout(`${f}: bevat een style=-attribuut`);
+      if (/<base\b|http-equiv\s*=\s*["']?refresh/i.test(tekst)) fout(`${f}: bevat <base> of een doorverwijzing`);
+    }
     const klein = tekst.toLowerCase();
     for (const w of verboden) if (klein.includes(w)) fout(`${f}: bevat een verboden woord (${verboden.indexOf(w) + 1}e uit VERBODEN_WOORDEN)`);
   }

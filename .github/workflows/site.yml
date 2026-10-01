@@ -31,12 +31,16 @@ jobs:
   bouwen:
     name: Screenshots, bouwen en controleren
     runs-on: ubuntu-24.04
+    # Deze job draait code van buiten (de app en npm-pakketten) en mag daarom alleen lezen.
+    # Schrijven (issue, geplande run) gebeurt in de job "bijhouden", die geen vreemde code draait.
     permissions:
       contents: read
-      issues: write   # issue bij een nieuwe functie zonder uitleg
-      actions: write  # geplande run actief houden (zie laatste stap)
+    outputs:
+      dekking: ${{ steps.dekking.outputs.rapport }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       # Vangnet: er mag nooit code van de app in deze publieke repo staan
       - name: Geen app-code in deze repo
@@ -56,21 +60,22 @@ jobs:
           fi
 
       - name: Nieuwste app ophalen (alleen op de runner, niet in de repo)
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: ${{ github.repository_owner }}/ploegapp
           token: ${{ secrets.PLOEGAPP_LEES_TOKEN }}
           path: .app
           persist-credentials: false
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
 
+      # --ignore-scripts: installatiescripts van npm-pakketten draaien niet (geen van de pakketten heeft ze nodig)
       - name: Afhankelijkheden
         run: |
-          npm ci --no-audit --no-fund
-          npm ci --prefix .app --omit=dev --no-audit --no-fund --silent
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix .app --omit=dev --ignore-scripts --no-audit --no-fund --silent
 
       - name: Screenshots maken (fictieve gegevens)
         run: npm run screenshots
@@ -84,30 +89,48 @@ jobs:
         run: npm run controleer
 
       - name: Staan alle functies van de app op de site?
-        run: node scripts/dekking.js
-
-      - name: Issue bij een nieuwe functie zonder uitleg
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && hashFiles('.tmp/dekking.md') != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
+        id: dekking
         run: |
-          TITEL="Nieuwe functie(s) in de app zonder uitleg op de site"
-          NR=$(gh issue list --state open --search "$TITEL in:title" --json number --jq '.[0].number // empty')
-          if [ -n "$NR" ]; then gh issue edit "$NR" --body-file .tmp/dekking.md
-          else gh issue create --title "$TITEL" --body-file .tmp/dekking.md; fi
+          node scripts/dekking.js
+          if [ -f .tmp/dekking.md ]; then echo "rapport=$(base64 -w0 .tmp/dekking.md)" >> "$GITHUB_OUTPUT"; fi
 
       # Alleen de gebouwde site gaat mee; .app/ en .beelden/ niet
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: uit
+
+  bijhouden:
+    name: Issue en geplande run bijhouden
+    needs: bouwen
+    if: >-
+      github.ref == 'refs/heads/main' && github.event_name != 'pull_request' &&
+      (needs.bouwen.outputs.dekking != '' || github.event_name == 'schedule')
+    runs-on: ubuntu-24.04
+    permissions:
+      issues: write   # issue bij een nieuwe functie zonder uitleg
+      actions: write  # geplande run actief houden
+    steps:
+      - name: Issue bij een nieuwe functie zonder uitleg
+        if: needs.bouwen.outputs.dekking != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RAPPORT: ${{ needs.bouwen.outputs.dekking }}
+        run: |
+          printf '%s' "$RAPPORT" | base64 -d > dekking.md
+          TITEL="Nieuwe functie(s) in de app zonder uitleg op de site"
+          NR=$(gh issue list --state open --search "$TITEL in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$NR" ]; then gh issue edit "$NR" --body-file dekking.md
+          else gh issue create --title "$TITEL" --body-file dekking.md; fi
 
       # GitHub zet geplande runs in publieke repo's uit na 60 dagen zonder activiteit; dit houdt ze aan
       - name: Geplande run actief houden
         if: github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/site.yml/enable" || true
+          GH_REPO: ${{ github.repository }}
+        run: gh api -X PUT "repos/$GH_REPO/actions/workflows/site.yml/enable" || true
 
   publiceren:
     name: Publiceren op GitHub Pages
@@ -115,8 +138,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     permissions:
-      pages: write
-      id-token: write
+      pages: write     # publiceren
+      id-token: write  # bewijs voor GitHub Pages dat de uitrol uit deze workflow komt
     environment:
       name: github-pages
       url: ${{ steps.uitrol.outputs.page_url }}
@@ -125,4 +148,4 @@ jobs:
       cancel-in-progress: false
     steps:
       - id: uitrol
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

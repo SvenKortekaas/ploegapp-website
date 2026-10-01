@@ -87,6 +87,41 @@ De app zelf heeft zijn eigen afhankelijkheden nodig (`npm ci --omit=dev` in de a
 
    Laat de records van de app (de subdomeinen van de korpsen) staan zoals ze zijn. Aanrader: verifieer het domein
    in je GitHub-account (Settings → Pages → *Add a domain*), zodat niemand anders het kan claimen.
+5. **Beveiligingsinstellingen van de repo** (eenmalig):
+   - Settings → Actions → General → *Workflow permissions*: **Read repository contents** en
+     *Allow GitHub Actions to create and approve pull requests* uit.
+   - Settings → Actions → General → *Actions permissions*: **Require actions to be pinned to a
+     full-length commit SHA** aan.
+   - Settings → Rules → Rulesets → *New branch ruleset* voor `main`: **Restrict deletions** en
+     **Block force pushes** aan (direct pushen blijft mogelijk).
+   - Settings → Advanced Security: **Dependabot alerts**, **Dependabot security updates**,
+     **Secret Protection** met **Push protection**, en **Private vulnerability reporting** aan.
+   - Je GitHub-account: tweestapsverificatie aan (met een passkey of app, niet sms).
+6. **Domein beveiligen** (bij Cloud86, de DNS-beheerder):
+   - **DNSSEC** aanzetten, zodat niemand valse DNS-antwoorden voor `ploegapp.nl` kan geven.
+   - Het domein **verifiëren in GitHub** (stap 4), zodat niemand anders het op GitHub Pages kan
+     gebruiken.
+
+## Beveiliging
+
+De site is statisch: geen server, geen database, geen formulieren, geen JavaScript, geen cookies.
+Er valt op de site zelf niets in te breken of te stelen. Het risico zit in hoe hij gemaakt en
+gepubliceerd wordt; daarvoor:
+
+- **Op elke pagina** een Content-Security-Policy (alleen eigen afbeeldingen en opmaak, verder niets)
+  en `no-referrer`. `scripts/controleer.js` keurt de site af als die ontbreken of veranderd zijn, en
+  bij `<script>`, `on...=`, `style=`, `<base>`, formulieren, iframes, externe bronnen of cookies.
+- **Workflows met zo min mogelijk rechten.** De job die de app en npm-pakketten draait, mag alleen
+  lezen en houdt geen token vast (`persist-credentials: false`). Een issue maken en de geplande run
+  aanhouden gebeurt in een aparte job zonder vreemde code. Alleen `main` mag publiceren.
+- **Geen installatiescripts** van npm-pakketten (`npm ci --ignore-scripts`).
+- **Acties vastgepind op een commit**, niet op een versienummer dat iemand kan verplaatsen.
+  Dependabot (`.github/dependabot.yml`) houdt ze en `playwright-core` wekelijks actueel.
+- **CodeQL** (`.github/workflows/codeql.yml`) scant de workflows en scripts bij elke push en elke
+  maandag; bevindingen staan onder Security → Code scanning.
+
+Wat niet kan op GitHub Pages: eigen HTTP-headers (zoals HSTS en `frame-ancestors`). Zonder
+formulieren of inlog is dat hier geen echt risico.
 
 ## Privacy van deze site
 

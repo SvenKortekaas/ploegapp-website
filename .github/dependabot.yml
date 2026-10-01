@@ -1,0 +1,15 @@
+# Houdt de GitHub-acties (vastgepind op een commit) en het npm-pakket automatisch actueel.
+# Dependabot opent een pull request; de controles draaien daarop, de eigenaar merget.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      acties:
+        patterns: ['*']
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly

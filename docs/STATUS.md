@@ -33,6 +33,19 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       nacht van 30 september op 1 oktober). GitHub slaat de eerste geplande runs van een nieuwe
       workflow vaker over. Kijk in Actions of er na 2 oktober 03:17 UTC een run "schedule" staat;
       zo niet, dan een tweede tijdstip toevoegen of het schema op `main` opnieuw opslaan.
+- [ ] Beveiligingsinstellingen van de repo en het account zetten (eigenaar; README, "Eenmalig instellen" stap 5).
+- [ ] DNSSEC aanzetten bij Cloud86 en het domein verifiëren in GitHub (eigenaar; stap 6). Stand
+      1 oktober: geen DNSSEC, en `_github-pages-challenge-svenkortekaas.ploegapp.nl` heeft geen TXT-record.
+- [ ] Mail van `ploegapp.nl` nakijken (eigenaar; hoort bij de app, niet bij de site): het MX-record
+      wijst naar `ploegapp.nl` zelf, dus naar GitHub Pages, en het SPF-record (`+a +mx`) staat daardoor
+      de servers van GitHub toe als afzender. Waarschijnlijk hoort er alleen `ip4:45.82.189.150` in.
+
+## Beveiliging (1 oktober nagekeken)
+
+Statische site zonder scripts, cookies of formulieren; HTTPS afgedwongen, `http` en `www` sturen
+door, geen `.git` of andere verborgen bestanden gepubliceerd. Workflows aangescherpt (minimale
+rechten, acties vastgepind, geen installatiescripts) en bewaakt door CodeQL en Dependabot; zie
+README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatregelen niet verzwakken.
 
 ## Besloten
 
