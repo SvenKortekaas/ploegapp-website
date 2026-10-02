@@ -47,6 +47,9 @@ const LEDEN = [
   ['Sem', 2, []],
 ];
 const ALLE_NAMEN = [BEHEERDER, ...LEDEN.map((l) => l[0])];
+// Deze leden doen in de voorbeelden zelf niets met hun link: Bas krijgt de feedbackvraag nog, Olga was
+// er niet, en bij Anouk en Chris laat het screenshot "Links versturen" zien dat ze nog niet ingelogd zijn.
+const NIET_INLOGGEN = ['Bas', 'Olga', 'Anouk', 'Chris', 'Karin', 'Jeroen'];
 
 const dag = (n) => {
   const d = new Date();
@@ -171,6 +174,7 @@ async function vul(basis, beheerToken) {
     kazerne_aan: true,
     kazerne_namen: true,
     kazerne_kop: 'Oefenavond Duinwijk',
+    aanwezig_qr: true, // aanwezig melden met de QR-code (feedback staat standaard aan)
   });
 
   // Oefenavonden
@@ -195,11 +199,13 @@ async function vul(basis, beheerToken) {
   const ja = (namen) => namen.map((n) => [n, 'ja']);
 
   // Twee afgelopen avonden met indeling en presentie: oefenuren en eerlijke rotatie
+  const verleden = [];
   for (const [n, namen] of [
     [-21, ['Jeroen', 'Anouk', 'Bas', 'Chris', 'Dirk', 'Eva', 'Fleur', 'Gijs', 'Hanna', 'Jesse', 'Kim', 'Lars', 'Niels', 'Olga', 'Pim']],
     [-7, ['Karin', 'Anouk', 'Bas', 'Chris', 'Eva', 'Fleur', 'Gijs', 'Ivo', 'Jesse', 'Kim', 'Lars', 'Mila', 'Olga', 'Roos', 'Sem']],
   ]) {
     const a = await plan(dag(n), [ademlucht(), beknelling()]);
+    verleden.push(a.id);
     await antwoorden(a, ja(namen));
     const ingedeeld = await api(`/avonden/${a.id}/indeling/automatisch`, 'POST', {});
     await api(`/avonden/${a.id}/publiceer`, 'POST', { melden: false });
@@ -209,6 +215,24 @@ async function vul(basis, beheerToken) {
         .filter((d) => d.status === 'ja')
         .map((d) => ({ lid_id: d.lid_id, aanwezig: d.lid_id !== id('Olga'), oefening_id: d.indeling?.oefening_id })),
     });
+  }
+
+  // Anonieme feedback op de ademlucht-oefening van vorige week, van een paar deelnemers (zelf ingevuld,
+  // met hun eigen link). Bas niet: bij hem staat de vraag "Hoe was deze oefening?" nog open.
+  const vorigeWeek = verleden[1];
+  {
+    const a = await api(`/avonden/${vorigeWeek}`);
+    const oef = a.oefeningen.find((o) => o.naam === 'Ademlucht binnenbrand');
+    const reacties = [
+      [5, 'Realistische rook en een duidelijke briefing vooraf.', 'Iets meer tijd voor de nabespreking.'],
+      [4, 'Goed dat we twee keer naar binnen gingen.', 'De portofoons van de tweede ploeg vielen weg.'],
+      [4, 'Fijn tempo, iedereen kwam aan de beurt.', ''],
+      [3, '', 'De ademluchtcontrole duurde lang, misschien vooraf klaarzetten.'],
+    ];
+    const gevers = oef.ingedeeld.map((d) => d.naam).filter((n) => !NIET_INLOGGEN.includes(n));
+    for (const [naam, [cijfer, goed, beter]] of gevers.slice(0, reacties.length).map((n, i) => [n, reacties[i]])) {
+      await apiVan(basis, leden[naam].token)(`/oefeningen/${oef.id}/feedback`, 'POST', { cijfer, goed, beter });
+    }
   }
 
   // Vanavond: ingedeeld en gepubliceerd (het kazernescherm toont dan de avond groot)
@@ -239,6 +263,10 @@ async function vul(basis, beheerToken) {
     const oef = a.oefeningen.find((o) => o.naam === 'Ademlucht binnenbrand');
     for (const v of (oef.voorbereiding || []).slice(0, 2)) await api(`/voorbereiding/${v.id}`, 'PUT', { gedaan: true });
     await api(`/oefeningen/${oef.id}/voorbereiding`, 'POST', { tekst: 'Rookmachine lenen bij de buurpost' });
+    // Notitie voor de deelnemers: wat je vooraf moet weten
+    await api(`/oefeningen/${oef.id}/notitie`, 'PUT', {
+      notitie: 'We verzamelen om 19:15 bij de oefentoren achter de kazerne. Neem je eigen handschoenen en een droog shirt mee.',
+    });
   }
 
   // Over 11 dagen: varen en pompen, nog niet iedereen heeft gereageerd (Bas nog niet)
@@ -262,8 +290,18 @@ async function vul(basis, beheerToken) {
   // Drukke dagen: vier leden van ploeg 1 tegelijk weg (de standaardgrens is drie)
   for (const naam of ['Eva', 'Hanna', 'Fleur']) await api('/afwezigheid', 'POST', { lid_id: id(naam), van: dag(15), tot: dag(17) });
 
+  // Als laatste (dan staat de melding bovenaan): een late afmelding. Iemand die al ingedeeld is, meldt
+  // zich met zijn eigen link toch af; de planners en de oefenleider krijgen een melding met een voorstel
+  // voor een vervanger. Iemand zonder vaste functie (manschap), zodat de bezetting voldoende blijft.
+  {
+    const a = await api(`/avonden/${komend.id}`);
+    const kandidaten = a.oefeningen.flatMap((o) => o.ingedeeld).filter((d) => !NIET_INLOGGEN.includes(d.naam));
+    const afmelder = kandidaten.find((d) => d.functie_id === functie.MS) || kandidaten[0];
+    if (afmelder) await apiVan(basis, leden[afmelder.naam].token)(`/avonden/${komend.id}/antwoord`, 'PUT', { lid_id: id(afmelder.naam), status: 'nee', opmerking: 'Toch dienst' });
+  }
+
   const inst = await api('/instellingen');
-  return { maand: dag(11).slice(0, 7), nieuweDatum: dag(25), leden, avonden: { vanavond: vanavond.id, komend: komend.id, varen: varen.id, gs: gs.id }, kazerneSleutel: inst.kazerne_sleutel };
+  return { maand: dag(11).slice(0, 7), nieuweDatum: dag(25), leden, avonden: { vanavond: vanavond.id, vorigeWeek, komend: komend.id, varen: varen.id, gs: gs.id }, kazerneSleutel: inst.kazerne_sleutel };
 }
 
 /** Vangnet: alleen doorgaan als er uitsluitend fictieve gegevens in de app staan. */

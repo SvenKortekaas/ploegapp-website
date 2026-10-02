@@ -93,7 +93,7 @@ async function main() {
       gemaakt.push(naam);
     }
 
-    const { komend, varen } = g.avonden;
+    const { komend, varen, vanavond, vorigeWeek } = g.avonden;
     const kaartMet = (tekst) => `.kaart:has-text("${tekst}")`;
 
     // --- Lid (Bas, chauffeur)
@@ -113,6 +113,36 @@ async function main() {
       await foto(p, 'lid-mijn-oefeningen', { scroll: kaartMet('Mijn oefeningen') });
       await ga(p, '#/meldingen', '#app');
       await foto(p, 'lid-meldingen');
+      // Notitie bij zijn oefening: wat je vooraf moet weten
+      await ga(p, `#/avond/${komend}`, '.kaart.uitgelicht');
+      await foto(p, 'lid-notitie', { scroll: '.oefening:has(.oef-notitie)' });
+      // Vorige week: de vraag om (anonieme) feedback, en het formulier
+      await ga(p, `#/avond/${vorigeWeek}`, '.feedback-vraag');
+      await p.$eval('.feedback-vraag', (el) => el.scrollIntoView({ block: 'start' }));
+      await p.click('[data-feedback-geven]');
+      await p.waitForSelector('dialog[open] .feedback-form');
+      await p.click('dialog[open] .sterren-kies label:nth-of-type(4)');
+      await p.fill('dialog[open] textarea[name="goed"]', 'Duidelijke uitleg en genoeg tijd om te oefenen.');
+      await foto(p, 'lid-feedback-geven');
+      await p.keyboard.press('Escape');
+      // De handleiding in de app
+      await ga(p, '#/handleiding', '#hl-zoek');
+      await foto(p, 'handleiding');
+      await p.context().close();
+    }
+
+    // --- Aanwezig melden op de avond zelf (Fleur)
+    {
+      const p = await telefoon('Fleur');
+      // De kaart staat er alleen rond de avond zelf (vanaf een uur voor de start). De screenshots worden
+      // op andere tijden gemaakt; daarom zet dit script in de browser alleen dat ene vlaggetje aan.
+      // Al het andere komt zoals altijd van de app.
+      await p.route(new RegExp(`/api/avonden/${vanavond}$`), async (route) => {
+        const r = await route.fetch();
+        route.fulfill({ response: r, json: { ...(await r.json()), aanwezig_melden: true } });
+      });
+      await ga(p, `#/avond/${vanavond}`, '.aanwezig-kaart');
+      await foto(p, 'lid-aanwezig', { scroll: '.aanwezig-kaart' });
       await p.context().close();
     }
 
@@ -160,6 +190,14 @@ async function main() {
       const vorige = await p.$eval('a[href$="/presentie"], a[href^="#/avond/"]', (a) => a.getAttribute('href').match(/\d+/)[0]);
       await ga(p, `#/avond/${vorige}/presentie`, '#opslaan');
       await foto(p, 'planner-presentie');
+      await ga(p, `#/avond/${vorigeWeek}`, '[data-feedback-lezen]');
+      await p.click('[data-feedback-lezen]');
+      await p.waitForSelector('dialog[open].feedback-dialoog');
+      await foto(p, 'planner-feedback');
+      await p.keyboard.press('Escape');
+      // Late afmelding: melding met een voorstel voor een vervanger
+      await ga(p, '#/meldingen', '#app');
+      await foto(p, 'planner-late-afmelding');
       await ga(p, '#/beheer/onderwerpen', '#onderwerp-lijsten .onderwerp-rij');
       await foto(p, 'planner-onderwerpen');
       // Als laatste: na het aanvinken vraagt de app bij weggaan of je je invoer kwijt wilt
@@ -203,6 +241,11 @@ async function main() {
       await foto(p, 'beheer-leden-import', { scroll: '#leden-import' });
       await ga(p, '#/beheer/instellingen', '#inst');
       await foto(p, 'beheer-instellingen');
+      await ga(p, '#/beheer/status', '.status-lijst');
+      await foto(p, 'beheer-status');
+      // Pincode voor beheer (onder Ik). Als laatste: daarna zou beheer om de pincode vragen.
+      await ga(p, '#/ik', '#pincode-kaart');
+      await foto(p, 'beheer-pincode', { scroll: 'h2:has(+ #pincode-kaart)' });
       await p.context().close();
     }
 

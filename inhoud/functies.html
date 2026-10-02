@@ -1,6 +1,6 @@
 <!--
 titel: Alle functies
-beschrijving: Wat Ploegapp kan: reageren met één tik, bezetting per functie, automatisch indelen, indeelbord, jaarplanning, voorbereiding, meldingen, rooster, voertuigen en vaartuigen, presentie, Excel en het kazernescherm.
+beschrijving: Wat Ploegapp kan: reageren met één tik, bezetting per functie, automatisch indelen, indeelbord, jaarplanning, voorbereiding, feedback, aanwezig melden met een QR-code, meldingen, rooster, voertuigen en vaartuigen, presentie, Excel en het kazernescherm.
 menu: 3
 menutekst: Functies
 -->
@@ -20,11 +20,16 @@ menutekst: Functies
         <ul>
           <li><a href="#poll">Reageren met één tik</a></li>
           <li><a href="#indeling">Je eigen indeling</a></li>
+          <li><a href="#notitie">Vooraf weten</a></li>
           <li><a href="#meldingen">Meldingen</a></li>
           <li><a href="#rooster">Rooster en afwezigheid</a></li>
           <li><a href="#mijn-oefeningen">Mijn oefeningen</a></li>
+          <li><a href="#feedback">Feedback geven</a></li>
+          <li><a href="#aanwezig">Aanwezig melden</a></li>
           <li><a href="#agenda">Agenda en delen</a></li>
           <li><a href="#installeren">Geen installatie</a></li>
+          <li><a href="#handleiding">Handleiding</a></li>
+          <li><a href="#toegankelijk">Donker en grote letters</a></li>
         </ul>
       </div>
       <div>
@@ -35,7 +40,9 @@ menutekst: Functies
           <li><a href="#bezetting">Bezetting in de gaten</a></li>
           <li><a href="#indelen">Automatisch indelen</a></li>
           <li><a href="#indeelbord">Het indeelbord</a></li>
+          <li><a href="#late-afmelding">Late afmelding</a></li>
           <li><a href="#oefenleiders">Oefenleiders</a></li>
+          <li><a href="#feedback-lezen">Feedback lezen</a></li>
           <li><a href="#voorbereiding">Voorbereiding</a></li>
           <li><a href="#presentie">Presentie en Excel</a></li>
           <li><a href="#onderwerpen">Onderwerpen</a></li>
@@ -48,7 +55,9 @@ menutekst: Functies
           <li><a href="#functies">Functies en rangorde</a></li>
           <li><a href="#leden">Leden toevoegen</a></li>
           <li><a href="#links">Links versturen</a></li>
+          <li><a href="#pincode">Pincode voor beheer</a></li>
           <li><a href="#instellen">Ploegen en instellingen</a></li>
+          <li><a href="#status">Status en bewaking</a></li>
           <li><a href="#kazernescherm">Kazernescherm</a></li>
           <li><a href="#veilig">Privacy en betrouwbaarheid</a></li>
         </ul>
@@ -79,7 +88,16 @@ menutekst: Functies
       [[telefoon lid-indeling | Je eigen indeling]]
     </div>
 
-    <div class="functie" id="meldingen">
+    <div class="functie" id="notitie">
+      <div>
+        <h2>Vooraf weten</h2>
+        <p>Bij een oefening kan een <b>notitie</b> staan met wat je vooraf moet weten: waar je verzamelt, wat je meeneemt of wat je alvast kunt lezen.</p>
+        <p>De planners en de oefenleiders van die oefening schrijven hem. Iedereen ziet hem bij de oefening en in het agenda-abonnement.</p>
+      </div>
+      [[telefoon lid-notitie | Vooraf weten: waar je verzamelt en wat je meeneemt]]
+    </div>
+
+    <div class="functie om" id="meldingen">
       <div>
         <h2>Meldingen, en een belletje dat ze bewaart</h2>
         <p>Je krijgt een pushmelding bij een nieuwe oefenavond, je indeling, wijzigingen en annuleringen. Heb je nog niet gereageerd, dan volgt vanzelf een herinnering (standaard 7, 3 en 1 dag vooraf om 19:00 uur).</p>
@@ -88,7 +106,7 @@ menutekst: Functies
       [[telefoon lid-meldingen | De meldingenpagina achter het belletje]]
     </div>
 
-    <div class="functie om" id="rooster">
+    <div class="functie" id="rooster">
       <div>
         <h2>Rooster, vakantie en afwezigheid</h2>
         <p>Een maandkalender met alle oefenavonden en wie er afwezig is. Je vakantie of afwezigheid geef je één keer door: je staat dan automatisch op "afwezig" en krijgt geen herinneringen.</p>
@@ -98,7 +116,7 @@ menutekst: Functies
       [[telefoon lid-rooster | Het rooster met een drukke periode gemarkeerd]]
     </div>
 
-    <div class="functie" id="mijn-oefeningen">
+    <div class="functie om" id="mijn-oefeningen">
       <div>
         <h2>Mijn oefeningen</h2>
         <p>Welke onderwerpen heb je de afgelopen twee jaar gedaan, en welke nog niet? Wat je nog niet hebt gedaan staat bovenaan, met de datum waarop het weer gepland staat.</p>
@@ -107,7 +125,25 @@ menutekst: Functies
       [[telefoon lid-mijn-oefeningen | Mijn oefeningen: wat nog niet gedaan is staat bovenaan]]
     </div>
 
-    <div class="functie om" id="agenda">
+    <div class="functie" id="feedback">
+      <div>
+        <h2>Feedback op een oefening</h2>
+        <p>Was je erbij? De ochtend erna vraagt de app <b>"Hoe was het?"</b>. Je geeft sterren en zegt kort wat goed ging en wat beter kan. Dat kan tot 14 dagen na de oefening.</p>
+        <p>Je feedback is <b>anoniem</b>: de oefenleider ziet niet van wie hij komt. Het gaat over de oefening, niet over jou.</p>
+      </div>
+      [[telefoon lid-feedback-geven | Anoniem feedback geven op een oefening]]
+    </div>
+
+    <div class="functie om" id="aanwezig">
+      <div>
+        <h2>Aanwezig melden</h2>
+        <p>Op de avond zelf scan je de <b>QR-code</b> in de kazerne met je camera, of je tikt bij de avond op <b>"Ik ben er"</b> en typt de 6 cijfers die onder de code staan. Je staat dan meteen bij de presentie.</p>
+        <p>De beheerder zet dit aan of uit. De code verandert elke 2 minuten en werkt alleen rond de avond zelf, dus een doorgestuurde foto helpt niet.</p>
+      </div>
+      [[telefoon lid-aanwezig | Op de avond zelf: "Ik ben er"]]
+    </div>
+
+    <div class="functie" id="agenda">
       <div>
         <h2>In je agenda, en delen in de groepsapp</h2>
         <p>Met het <b>agenda-abonnement</b> staan alle oefenavonden, met je eigen indeling, automatisch in Google Agenda, Apple Agenda of Outlook. Wijzigingen komen vanzelf mee.</p>
@@ -117,7 +153,7 @@ menutekst: Functies
       [[telefoon lid-ik | Meldingen, agenda en je eigen oefenuren]]
     </div>
 
-    <div class="functie" id="installeren">
+    <div class="functie om" id="installeren">
       <div>
         <h2>Geen app store, geen wachtwoord</h2>
         <p>Ploegapp is een webapp. Je opent je persoonlijke link en bent meteen ingelogd. Zet hem op je beginscherm, dan werkt hij als een gewone app, inclusief meldingen.</p>
@@ -127,10 +163,21 @@ menutekst: Functies
       [[telefoon installeren | Uitleg om de app op je beginscherm te zetten]]
     </div>
 
-    <div class="functie om" id="donker">
+    <div class="functie" id="handleiding">
       <div>
-        <h2>Prettig in het donker</h2>
+        <h2>Een handleiding in de app</h2>
+        <p>Hoe werkt het ook alweer? De <b>handleiding</b> staat in de app zelf, onder Ik of via de ⓘ-knopjes op de schermen. In gewone taal, per rol, met afbeeldingen.</p>
+        <p>Hij is ook te lezen zonder in te loggen en zonder internet.</p>
+      </div>
+      [[telefoon handleiding | De handleiding in de app]]
+    </div>
+
+    <div class="functie om" id="toegankelijk">
+      <div>
+        <h2>Donker, grote letters en schermlezers</h2>
         <p>Staat je telefoon op donkere modus, dan volgt de app vanzelf.</p>
+        <p>Heb je op je telefoon <b>grotere letters</b> ingesteld, dan gebruikt de app die ook. Op een iPhone stel je dat in onder Instellingen → Beeldscherm en helderheid → Tekstgrootte; Android doet het vanzelf. Met de standaardinstelling verandert er niets.</p>
+        <p>In licht en donker is er genoeg kleurcontrast, en knoppen en velden hebben labels voor schermlezers.</p>
       </div>
       [[telefoon lid-donker | De app in donkere modus]]
     </div>
@@ -200,7 +247,17 @@ menutekst: Functies
       [[breed planner-bord | Het indeelbord op een laptop]]
     </div>
 
-    <div class="functie om" id="oefenleiders">
+    <div class="functie om" id="late-afmelding">
+      <div>
+        <h2>Late afmelding</h2>
+        <p>Meldt iemand zich af terwijl hij al ingedeeld is, dan vraagt de app eerst of hij het zeker weet. Daarna komt zijn plek vrij.</p>
+        <p>De planners en de oefenleiders van die oefening krijgen meteen een melding, met een <b>voorstel voor een vervanger</b>: iemand die "ja" of "misschien" zei, nog niet ingedeeld is en dezelfde functie heeft.</p>
+        <p>Zegt iemand die ingedeeld is "misschien", dan blijft hij staan en komt er ook een melding.</p>
+      </div>
+      [[telefoon planner-late-afmelding | Melding van een late afmelding, met een mogelijke vervanger]]
+    </div>
+
+    <div class="functie" id="oefenleiders">
       <div>
         <h2>Oefenleiders</h2>
         <p>Geef elke oefening een oefenleider. Die zet de oefening uit, wordt niet op een voertuig ingedeeld en telt niet mee voor de bezetting.</p>
@@ -209,12 +266,22 @@ menutekst: Functies
       [[telefoon oefenleider | Oefenleider: draaiboek toevoegen of een vervanger vragen]]
     </div>
 
+    <div class="functie om" id="feedback-lezen">
+      <div>
+        <h2>Feedback lezen</h2>
+        <p>Oefenleiders en planners zien bij een oefening de anonieme <a href="#feedback">feedback</a> van de deelnemers: de sterren, wat goed ging en wat beter kan.</p>
+        <p>Bij een nieuwe oefening met hetzelfde onderwerp zie je ook de feedback van eerdere keren. Handig bij het voorbereiden.</p>
+        <p>De beheerder zet feedback aan of uit in de instellingen.</p>
+      </div>
+      [[telefoon planner-feedback | Anonieme feedback op een oefening]]
+    </div>
+
     <div class="functie" id="voorbereiding">
       <div>
         <h2>Voorbereiding met een afvinklijst</h2>
         <p>Per oefening een <b>afvinklijst</b>: de standaardpunten stelt de beheerder in (zoals locatie, materiaal, draaiboek en voertuigen), en je zet er eigen punten bij. Je ziet wie wat heeft afgevinkt.</p>
         <p>Een paar weken van tevoren vraagt de app "Is alles geregeld?", met een herinnering als er nog punten openstaan. Links naar het draaiboek, de documentatie of websites worden per onderwerp onthouden.</p>
-        <p>De afvinklijst zien alleen planners en de oefenleiders van die oefening.</p>
+        <p>De afvinklijst zien alleen planners en de oefenleiders van die oefening. Wat deelnemers moeten weten, zet je in de <a href="#notitie">notitie</a>.</p>
       </div>
       [[telefoon planner-voorbereiding | De afvinklijst van een oefening]]
     </div>
@@ -223,11 +290,13 @@ menutekst: Functies
       <div>
         <h2>Presentie, oefenuren en Excel</h2>
         <p>Na een avond vinkt de planner af wie er echt was, en bij welke oefening. Daaruit volgen de oefenuren per lid per jaar.</p>
+        <p>Staat <a href="#aanwezig">aanwezig melden</a> aan, dan toont de planner of oefenleider op de avond een QR-code (of de tv in de kazerne). Wie scant, is bij de presentie al aangevinkt.</p>
         <p>Planners kunnen downloaden voor <b>Excel</b>:</p>
         <ul class="vink">
           <li>de antwoorden per avond, met opmerking, indeling en presentie</li>
           <li>een jaaroverzicht van alle polls per lid, met reactiepercentage</li>
           <li>de oefenuren per lid</li>
+          <li>een <b>vakbekwaamheidsoverzicht</b> over een zelfgekozen periode: per lid elke oefening met datum, onderwerp en uren, handig voor het jaarverslag</li>
         </ul>
       </div>
       [[telefoon beheer-oefenuren | Oefenuren per lid]]
@@ -288,7 +357,17 @@ menutekst: Functies
       [[telefoon beheer-links | Links versturen, met voortgang]]
     </div>
 
-    <div class="functie" id="instellen">
+    <div class="functie" id="pincode">
+      <div>
+        <h2>Pincode voor beheer</h2>
+        <p>Beheerders stellen onder Ik een <b>pincode van 6 cijfers</b> in. Daarna vraagt elke beheeractie (leden en hun links, voertuigen, ploegen, functies, instellingen, back-up) eerst de pincode. Het apparaat blijft daarna 12 uur ontgrendeld.</p>
+        <p>Zo kan iemand die alleen jouw link in handen krijgt niets beheren. Plannen en indelen vragen geen pincode.</p>
+        <p>Na 5 foute pogingen is beheer 15 minuten geblokkeerd. Een vergeten pincode wist een andere beheerder.</p>
+      </div>
+      [[telefoon beheer-pincode | Een pincode instellen voor beheer]]
+    </div>
+
+    <div class="functie om" id="instellen">
       <div>
         <h2>Ploegen, rollen en instellingen</h2>
         <p>Ploegen met een eigen kleur, drie <a href="rollen.html">rollen</a> (lid, planner, beheerder) en instellingen voor standaardtijden, minimale bezetting, herinneringen, meldingen, de afvinklijst en bewaartermijnen.</p>
@@ -297,12 +376,22 @@ menutekst: Functies
       [[telefoon beheer-instellingen | Instellingen]]
     </div>
 
+    <div class="functie" id="status">
+      <div>
+        <h2>Status en bewaking</h2>
+        <p>Onder Beheer → Status zie je per onderdeel een <b>stoplicht</b>: database, opslag, back-ups, back-up buiten de server, meldingen en serverfouten. Met uitleg, wat je kunt doen, en de afgelopen 7 dagen.</p>
+        <p>De server controleert zichzelf elke 5 minuten en meldt veranderingen aan de beheerders. Voor bewaking van buitenaf is er een openbare statuspagina (alleen "ok" of "storing") en een hartslag naar een gratis bewakingsdienst.</p>
+      </div>
+      [[telefoon beheer-status | Status per onderdeel, met een stoplicht]]
+    </div>
+
     <div class="functie breed-beeld" id="kazernescherm">
       <div>
         <h2>Het kazernescherm</h2>
         <p>Een alleen-lezen weergave voor een <b>tv in de kazerne</b> of een iframe op de website van het korps. Op de oefendag staat de avond groot in beeld: per oefening wie op welk voertuig zit, de oefenleiders en de voertuigkoppels. Op andere dagen zie je de komende avonden.</p>
         <ul class="vink">
           <li>De link stel je samen in de instellingen: weergave, donker of licht thema, aantal avonden en hoogte van de iframe</li>
+          <li>Op de tv kan de <a href="#aanwezig">QR-code om aanwezig te melden</a> erbij staan, nooit in de iframe op een website</li>
           <li>Eigen kleur en koptekst</li>
           <li>Namen alleen als je dat aanzet, en je bepaalt welke websites het mogen tonen</li>
           <li>Een nieuwe link schakelt de oude direct uit</li>
@@ -321,7 +410,7 @@ menutekst: Functies
     <h2 class="groep">Privacy, veiligheid en betrouwbaarheid</h2>
     <div class="kaarten">
       <div class="kaart"><h3>AVG</h3><p>Alleen roepnamen, geen reden van afwezigheid, automatisch opruimen volgens bewaartermijnen. Leden kunnen hun gegevens inzien en hun account zelf verwijderen.</p><p><a href="privacy.html">Meer over privacy →</a></p></div>
-      <div class="kaart"><h3>Beveiliging</h3><p>Onraadbare persoonlijke links, een blokkade na mislukte pogingen, strikte beveiligingsinstellingen. Geen cookies of externe scripts.</p></div>
+      <div class="kaart"><h3>Beveiliging</h3><p>Onraadbare persoonlijke links, een aparte agendalink waarmee je niet kunt inloggen, een <a href="#pincode">pincode voor beheer</a>, een blokkade na mislukte pogingen en strikte beveiligingsinstellingen. Geen cookies of externe scripts.</p></div>
       <div class="kaart"><h3>Geen dataverlies</h3><p>Database op een blijvende schijf, dagelijkse back-ups, een doorlopende back-up naar EU-opslag, een kopie vóór elke databasewijziging en elke week een automatische hersteloefening.</p></div>
       <div class="kaart"><h3>Altijd een werkende versie</h3><p>Bij elke wijziging draaien automatische tests. Alleen als alles slaagt, gaat de nieuwe versie live. Mislukt de controle daarna, dan gaat de app vanzelf terug naar de vorige versie.</p></div>
     </div>
