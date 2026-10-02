@@ -3,7 +3,7 @@
 De voorlichtingssite van **Ploegapp**: wat de app is, wat hij kan en hoe je hem gebruikt, met
 screenshots van de nieuwste versie.
 
-- **Altijd actueel.** Elke nacht haalt GitHub Actions de nieuwste app op, start die met een lege
+- **Altijd actueel.** Elke dag haalt GitHub Actions de nieuwste app op, start die met een lege
   database, vult hem met verzonnen gegevens en maakt nieuwe screenshots.
 - **Alleen verzonnen gegevens.** Het korps "Brandweer Duinwijk" en alle namen zijn verzonnen
   (`scripts/voorbeeld.js`). Het screenshotscript stopt als er iets anders in de database staat.

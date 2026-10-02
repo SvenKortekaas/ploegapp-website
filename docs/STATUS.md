@@ -6,7 +6,7 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 
 - **Live**: https://ploegapp.nl (GitHub Pages, eigen domein, HTTPS afgedwongen). `www` en `http`
   sturen door.
-- **Elke nacht** (03:17 UTC) en bij elke push naar `main`: nieuwste app ophalen, screenshots met
+- **Elke dag** (03:17, 09:41 en 15:23 UTC) en bij elke push naar `main`: nieuwste app ophalen, screenshots met
   verzonnen gegevens (Brandweer Duinwijk), bouwen, controleren, publiceren. Handmatig: Actions →
   "Site bouwen en publiceren" → Run workflow.
 - **Secrets** in deze repo: `PLOEGAPP_LEES_TOKEN` (alleen-lezen op de app-repo, Contents: read).
@@ -28,11 +28,11 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 - [x] Oude branch `claude/pensive-darwin-579y9z` verwijderen (eigenaar, via GitHub).
 - [x] Oude workflowruns 1 t/m 6 verwijderen (bevatten oude commitberichten).
 - [x] GitHub Support vragen om cached views en losse oude commits van deze repo te wissen.
-- [ ] Controleren dat de geplande nachtelijke run echt draait. Stand 1 oktober: de workflow staat
-      op `active`, maar er is nog geen enkele run met gebeurtenis `schedule` geweest (ook niet in de
-      nacht van 30 september op 1 oktober). GitHub slaat de eerste geplande runs van een nieuwe
-      workflow vaker over. Kijk in Actions of er na 2 oktober 03:17 UTC een run "schedule" staat;
-      zo niet, dan een tweede tijdstip toevoegen of het schema op `main` opnieuw opslaan.
+- [ ] Controleren dat de geplande runs draaien. In twee nachten (1 en 2 oktober, 03:17 UTC) is er
+      geen run op tijd gestart; één geplande run kwam op 1 oktober om 10:14 UTC, ruim zeven uur te
+      laat. Sinds 2 oktober drie tijdstippen per dag (03:17, 09:41 en 15:23 UTC), zodat er ook bij een
+      overgeslagen run elke dag verse screenshots komen. Kijk na een paar dagen in Actions (filter
+      "event: schedule") of er elke dag minstens één is.
 - [ ] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
       Daarna de open pull requests van Dependabot laten hercontroleren en mergen als ze groen zijn.
 - [ ] Beveiligingsinstellingen van de repo en het account zetten (eigenaar; README, "Eenmalig instellen" stap 5).

@@ -16,7 +16,11 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: '17 3 * * *' # elke nacht: nieuwste app, verse screenshots (datums in de voorbeelden lopen mee)
+    # Elke nacht: nieuwste app, verse screenshots (datums in de voorbeelden lopen mee).
+    # GitHub slaat geplande runs soms over of start ze uren later; daarom drie tijdstippen (UTC).
+    - cron: '17 3 * * *'
+    - cron: '41 9 * * *'
+    - cron: '23 15 * * *'
   repository_dispatch:
     types: [app-bijgewerkt] # optioneel: de app-repo kan dit sturen na een uitrol
 
