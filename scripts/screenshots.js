@@ -264,6 +264,39 @@ async function main() {
       await context.close();
     }
 
+    // Kleinere bestanden voor de site: WebP (ongeveer de helft van PNG), gemaakt door Chromium zelf.
+    // De PNG blijft in .beelden/ voor de afmetingen en de deelafbeelding.
+    {
+      const p = await browser.newPage();
+      for (const naam of gemaakt) {
+        const png = fs.readFileSync(path.join(UIT, `${naam}.png`)).toString('base64');
+        const webp = await p.evaluate(async (data) => {
+          const img = new Image();
+          img.src = `data:image/png;base64,${data}`;
+          await img.decode();
+          const c = document.createElement('canvas');
+          [c.width, c.height] = [img.naturalWidth, img.naturalHeight];
+          c.getContext('2d').drawImage(img, 0, 0);
+          return c.toDataURL('image/webp', 0.8).split(',')[1];
+        }, png);
+        fs.writeFileSync(path.join(UIT, `${naam}.webp`), Buffer.from(webp, 'base64'));
+      }
+
+      // Deelafbeelding (1200×630) voor WhatsApp, LinkedIn en zoekmachines, met het nieuwste screenshot
+      const telefoon = fs.readFileSync(path.join(UIT, 'lid-overzicht.png')).toString('base64');
+      await p.setViewportSize({ width: 1200, height: 630 });
+      await p.setContent(`<!doctype html><html lang="nl"><body style="margin:0;width:1200px;height:630px;display:flex;align-items:center;gap:56px;background:#b3001b;color:#fff;font-family:system-ui,'DejaVu Sans',sans-serif;overflow:hidden">
+        <div style="flex:1;padding-left:80px">
+          <div style="font-size:30px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.06em">Voor brandweerploegen</div>
+          <div style="font-size:96px;font-weight:800;line-height:1;margin:18px 0 24px">Ploegapp</div>
+          <div style="font-size:40px;line-height:1.25;font-weight:600">Oefenavonden plannen,<br>bezetting en indeling<br>zonder gedoe.</div>
+        </div>
+        <img src="data:image/png;base64,${telefoon}" style="width:330px;margin:60px 90px 0 0;align-self:flex-start;border:12px solid #1c1c1e;border-radius:44px;box-shadow:0 20px 60px rgb(0 0 0/35%)">
+      </body></html>`);
+      await p.screenshot({ path: path.join(UIT, 'deelbeeld.png') });
+      await p.close();
+    }
+
     fs.writeFileSync(path.join(UIT, 'gemaakt.json'), JSON.stringify({ datum: new Date().toISOString(), beelden: gemaakt }, null, 2));
     console.log(`${gemaakt.length} screenshots gemaakt.`);
   } finally {

@@ -42,12 +42,23 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       wijst naar `ploegapp.nl` zelf, dus naar GitHub Pages, en het SPF-record (`+a +mx`) staat daardoor
       de servers van GitHub toe als afzender. Waarschijnlijk hoort er alleen `ip4:45.82.189.150` in.
 
+## Vindbaarheid (3 oktober)
+
+Canonical, Open Graph met deelafbeelding, gestructureerde gegevens, sitemap, WebP-afbeeldingen;
+titels en beschrijvingen herschreven. Lighthouse lokaal: 100 op vindbaarheid, toegankelijkheid,
+goede praktijken en snelheid, op alle pagina's. Bewaakt door `controleer.js` en wekelijks Lighthouse
+(README, "Vindbaarheid").
+
 ## Beveiliging (1 oktober nagekeken)
 
 Statische site zonder scripts, cookies of formulieren; HTTPS afgedwongen, `http` en `www` sturen
 door, geen `.git` of andere verborgen bestanden gepubliceerd. Workflows aangescherpt (minimale
 rechten, acties vastgepind, geen installatiescripts) en bewaakt door CodeQL en Dependabot; zie
 README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatregelen niet verzwakken.
+- [ ] Mail voor `info@ploegapp.nl` regelen bij Cloud86 (eigenaar). Het adres staat op de site, maar
+      het MX-record van `ploegapp.nl` wijst naar `ploegapp.nl` zelf (GitHub Pages): mail komt nu nergens aan.
+- [ ] Google Search Console en Bing Webmaster Tools: domein `ploegapp.nl` toevoegen (verifiëren met een
+      TXT-record bij Cloud86) en `https://ploegapp.nl/sitemap.xml` insturen (eigenaar).
 
 ## Besloten
 

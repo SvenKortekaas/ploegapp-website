@@ -3,14 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>{{paginatitel}}</title>
 <meta name="description" content="{{beschrijving}}">
+{{zoekmachine}}<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ploegapp">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="{{deeltitel}}">
+<meta property="og:description" content="{{beschrijving}}">
+<meta property="og:image" content="https://ploegapp.nl/deelbeeld.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ploegapp: oefenavonden plannen voor brandweerploegen, met een screenshot van de app">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#b3001b">
 <link rel="icon" href="{{pad}}favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{{pad}}style.css">
-</head>
+{{gegevens}}</head>
 <body>
 <a class="naar-inhoud" href="#inhoud">Naar de inhoud</a>
 <header class="kop">
@@ -34,6 +45,7 @@
     <p><b>Ploegapp</b>: beschikbaarheid en oefenplanning voor brandweerploegen.</p>
     <p>Alle namen, korpsen en gegevens op deze site zijn verzonnen. De screenshots zijn automatisch gemaakt van de nieuwste versie van de app, bijgewerkt op {{bijgewerkt}}.</p>
     <p>Deze site gebruikt geen cookies, trackers of externe diensten. <a href="{{pad}}over.html">Over deze site en privacy</a></p>
+    <p class="contact">Vragen, of interesse voor jouw korps? <a href="mailto:info@ploegapp.nl">info@ploegapp.nl</a></p>
   </div>
 </footer>
 </body>

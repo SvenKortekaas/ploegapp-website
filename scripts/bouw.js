@@ -25,6 +25,49 @@ const SJABLOON = path.join(WORTEL, 'sjabloon');
 const BEELDEN = path.join(WORTEL, '.beelden');
 const UIT = path.join(WORTEL, 'uit');
 
+const SITE = 'https://ploegapp.nl/';
+const CONTACT = 'info@ploegapp.nl';
+const adres = (bestand) => SITE + (bestand === 'index.html' ? '' : bestand);
+const kaal = (html) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+  .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+
+/** Gestructureerde gegevens (JSON-LD) voor zoekmachines. Data, geen code: de browser voert het niet uit. */
+function gegevens(p, inhoud) {
+  const blokken = [];
+  if (p.bestand === 'index.html') {
+    blokken.push({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Ploegapp',
+      url: SITE,
+      description: p.beschrijving,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web, iOS, Android',
+      inLanguage: 'nl',
+      image: SITE + 'deelbeeld.png',
+      audience: { '@type': 'Audience', audienceType: 'Brandweerploegen en hun planners' },
+    }, {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Ploegapp',
+      url: SITE,
+      email: CONTACT,
+      contactPoint: { '@type': 'ContactPoint', email: CONTACT, contactType: 'customer support', availableLanguage: 'nl' },
+    });
+  }
+  // Vragenpagina: elke <details> met <summary> wordt een vraag met antwoord
+  const vragen = [...inhoud.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/g)];
+  if (p.bestand === 'vragen.html' && vragen.length) {
+    blokken.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: vragen.map(([, v, a]) => ({ '@type': 'Question', name: kaal(v), acceptedAnswer: { '@type': 'Answer', text: kaal(a) } })),
+    });
+  }
+  // < escapen, zodat de tekst nooit het blok kan afsluiten
+  return blokken.map((b) => `<script type="application/ld+json">${JSON.stringify(b).replace(/</g, '\\u003c')}</script>\n`).join('');
+}
+
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 function leesPagina(bestand) {
@@ -61,7 +104,7 @@ function main() {
     const schaal = soort === 'telefoon' ? 2 : 1;
     const [b, h] = [png.readUInt32BE(16) / schaal, png.readUInt32BE(20) / schaal];
     const alt = onderschrift || naam;
-    return `<figure class="${soort === 'telefoon' ? 'telefoon' : 'tv'}"><div class="scherm"><img src="beelden/${naam}.png" width="${b}" height="${h}" alt="Screenshot: ${esc(alt)}" loading="lazy" decoding="async"></div>${onderschrift ? `<figcaption>${esc(onderschrift)}</figcaption>` : ''}</figure>`;
+    return `<figure class="${soort === 'telefoon' ? 'telefoon' : 'tv'}"><div class="scherm"><img src="beelden/${naam}.webp" width="${b}" height="${h}" alt="Screenshot: ${esc(alt)}" loading="lazy" decoding="async"></div>${onderschrift ? `<figcaption>${esc(onderschrift)}</figcaption>` : ''}</figure>`;
   }
 
   for (const p of paginas) {
@@ -71,8 +114,13 @@ function main() {
       .map((m) => `        <li><a href="${m.bestand}"${m.bestand === p.bestand ? ' aria-current="page"' : ''}>${esc(m.menutekst || m.titel)}</a></li>`)
       .join('\n');
     const titel = p.bestand === 'index.html' ? `Ploegapp – ${p.titel}` : `${p.titel} – Ploegapp`;
+    const fout404 = p.bestand === '404.html';
     const html = sjabloon
       .replaceAll('{{paginatitel}}', esc(titel))
+      .replaceAll('{{deeltitel}}', esc(p.bestand === 'index.html' ? titel : p.titel))
+      // De 404-pagina niet in zoekmachines; alle andere pagina's met hun vaste adres
+      .replace('{{zoekmachine}}', fout404 ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" href="${adres(p.bestand)}">\n`)
+      .replace('{{gegevens}}', () => gegevens(p, inhoud))
       .replaceAll('{{beschrijving}}', esc(p.beschrijving))
       .replaceAll('{{menu}}', menuHtml)
       .replaceAll('{{bijgewerkt}}', esc(bijgewerkt))
@@ -81,13 +129,19 @@ function main() {
     fs.writeFileSync(path.join(UIT, p.bestand), html);
   }
 
-  for (const naam of gebruikt) fs.copyFileSync(path.join(BEELDEN, `${naam}.png`), path.join(UIT, 'beelden', `${naam}.png`));
+  for (const naam of gebruikt) fs.copyFileSync(path.join(BEELDEN, `${naam}.webp`), path.join(UIT, 'beelden', `${naam}.webp`));
+  fs.copyFileSync(path.join(BEELDEN, 'deelbeeld.png'), path.join(UIT, 'deelbeeld.png'));
+
+  // Sitemap: alle pagina's behalve de 404
+  const urls = paginas.filter((p) => p.bestand !== '404.html').map((p) => `  <url><loc>${adres(p.bestand)}</loc></url>`);
+  fs.writeFileSync(path.join(UIT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
   const ongebruikt = info.beelden.filter((n) => !gebruikt.has(n));
   if (ongebruikt.length) console.log(`Let op: screenshots niet gebruikt op de site: ${ongebruikt.join(', ')}`);
 
   fs.copyFileSync(path.join(SJABLOON, 'style.css'), path.join(UIT, 'style.css'));
   fs.copyFileSync(path.join(SJABLOON, 'favicon.svg'), path.join(UIT, 'favicon.svg'));
-  fs.writeFileSync(path.join(UIT, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+  // Alle zoekmachines en AI-zoekdiensten mogen alles lezen (er staan alleen verzonnen gegevens op)
+  fs.writeFileSync(path.join(UIT, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`);
   fs.writeFileSync(path.join(UIT, '.nojekyll'), '');
 
   console.log(`Site gebouwd: ${paginas.length} pagina's, ${gebruikt.size} screenshots (bijgewerkt ${bijgewerkt}).`);

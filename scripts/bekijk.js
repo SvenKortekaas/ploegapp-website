@@ -6,7 +6,10 @@ const path = require('node:path');
 const http = require('node:http');
 
 const UIT = path.join(__dirname, '..', 'uit');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.txt': 'text/plain' };
+const TYPES = {
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp',
+  '.svg': 'image/svg+xml', '.txt': 'text/plain', '.xml': 'application/xml',
+};
 const poort = +process.env.PORT || 8080;
 
 http.createServer((req, res) => {

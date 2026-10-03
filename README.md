@@ -9,8 +9,8 @@ screenshots van de nieuwste versie.
   (`scripts/voorbeeld.js`). Het screenshotscript stopt als er iets anders in de database staat.
 - **Geen app-code in deze repo.** De app is privé en blijft dat. Hij staat alleen tijdelijk op de
   runner (`.app/`, in `.gitignore`), en de workflow faalt als er ooit app-bestanden in deze repo staan.
-  De gepubliceerde site bevat alleen html, css, png, svg en txt.
-- **Geen cookies, trackers of externe diensten.** Geen JavaScript op de site. `scripts/controleer.js`
+  De gepubliceerde site bevat alleen html, css, afbeeldingen (png, webp, svg), txt en de sitemap (xml).
+- **Geen cookies, trackers of externe diensten.** Geen JavaScript op de site (alleen gestructureerde gegevens voor zoekmachines, die niet worden uitgevoerd). `scripts/controleer.js`
   laadt elke pagina in Chromium en keurt de site af bij een cookie, script of verzoek naar buiten.
 
 ## Opbouw
@@ -111,7 +111,7 @@ De site is statisch: geen server, geen database, geen formulieren, geen JavaScri
 Er valt op de site zelf niets in te breken of te stelen. Het risico zit in hoe hij gemaakt en
 gepubliceerd wordt; daarvoor:
 
-- **Op elke pagina** een Content-Security-Policy (alleen eigen afbeeldingen en opmaak, verder niets)
+- **Op elke pagina** een Content-Security-Policy (alleen eigen afbeeldingen, opmaak en bestanden van de site zelf, verder niets)
   en `no-referrer`. `scripts/controleer.js` keurt de site af als die ontbreken of veranderd zijn, en
   bij `<script>`, `on...=`, `style=`, `<base>`, formulieren, iframes, externe bronnen of cookies.
 - **Workflows met zo min mogelijk rechten.** De job die de app en npm-pakketten draait, mag alleen
@@ -125,6 +125,35 @@ gepubliceerd wordt; daarvoor:
 
 Wat niet kan op GitHub Pages: eigen HTTP-headers (zoals HSTS en `frame-ancestors`). Zonder
 formulieren of inlog is dat hier geen echt risico.
+
+## Vindbaarheid (SEO)
+
+`scripts/bouw.js` geeft elke pagina vanzelf wat zoekmachines en deelvoorbeelden nodig hebben:
+
+- een vast adres (`canonical`), Open Graph-gegevens en een deelafbeelding van 1200×630
+  (`deelbeeld.png`, elke build opnieuw gemaakt met het nieuwste screenshot);
+- gestructureerde gegevens (JSON-LD): de app en het contactadres op de voorpagina, en de vragen
+  en antwoorden van `vragen.html` (elke `<details>` met `<summary>` wordt een vraag);
+- `sitemap.xml` met alle pagina's, en `robots.txt` die ernaar verwijst. Alle zoekmachines en
+  AI-zoekdiensten mogen de site lezen; de 404-pagina staat op `noindex`.
+
+Screenshots staan als WebP op de site (ongeveer de helft van PNG).
+
+**Zo blijft het goed:** `scripts/controleer.js` keurt de site af bij een titel van meer dan 60 of
+een beschrijving van meer dan 160 tekens (of te kort, of dubbel), niet precies één `h1`, een
+ontbrekend canonical-adres of Open Graph-gegeven, een pagina die niet in de sitemap staat, ongeldige
+gestructureerde gegevens of een afbeelding boven 250 kB. Elke maandag meet
+`.github/workflows/lighthouse.yml` de live site met Lighthouse: vindbaarheid, toegankelijkheid en
+goede praktijken moeten 100 zijn, snelheid minimaal 90. Lukt dat niet, dan wordt de workflow rood en
+krijg je een mail van GitHub.
+
+Een nieuwe pagina: kies een titel (zonder " – Ploegapp", komt er vanzelf achter) van hooguit 49
+tekens en een beschrijving van 120 tot 155 tekens met de woorden waarop mensen zoeken.
+
+## Contact
+
+Het contactadres `info@ploegapp.nl` staat in de voettekst van elke pagina, onder *Over deze site* en
+bij de vragen. Het staat ook in `scripts/bouw.js` (gestructureerde gegevens).
 
 ## Privacy van deze site
 

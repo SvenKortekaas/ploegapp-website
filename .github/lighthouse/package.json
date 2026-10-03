@@ -1,0 +1,8 @@
+{
+  "name": "ploegapp-website-lighthouse",
+  "private": true,
+  "description": "Alleen voor de wekelijkse meting met Lighthouse (.github/workflows/lighthouse.yml)",
+  "devDependencies": {
+    "lighthouse": "13.5.0"
+  }
+}
