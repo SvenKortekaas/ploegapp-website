@@ -28,11 +28,10 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 - [x] Oude branch `claude/pensive-darwin-579y9z` verwijderen (eigenaar, via GitHub).
 - [x] Oude workflowruns 1 t/m 6 verwijderen (bevatten oude commitberichten).
 - [x] GitHub Support vragen om cached views en losse oude commits van deze repo te wissen.
-- [ ] Controleren dat de geplande runs draaien. In twee nachten (1 en 2 oktober, 03:17 UTC) is er
-      geen run op tijd gestart; één geplande run kwam op 1 oktober om 10:14 UTC, ruim zeven uur te
-      laat. Sinds 2 oktober drie tijdstippen per dag (03:17, 09:41 en 15:23 UTC), zodat er ook bij een
-      overgeslagen run elke dag verse screenshots komen. Kijk na een paar dagen in Actions (filter
-      "event: schedule") of er elke dag minstens één is.
+- [x] Geplande runs draaien. Sinds 2 oktober elke dag 3 geplande runs, alle geslaagd (nagekeken op
+      5 oktober). GitHub start ze wel 3 tot 6 uur later dan gepland: de run van 03:17 UTC komt rond
+      09:00-10:00, die van 09:41 rond 14:00-16:00, die van 15:23 rond 18:30-20:00. Dat is normaal bij
+      GitHub en geen probleem: de site krijgt elke dag verse screenshots.
 - [ ] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
       Daarna de open pull requests van Dependabot laten hercontroleren en mergen als ze groen zijn.
 - [ ] Beveiligingsinstellingen van de repo en het account zetten (eigenaar; README, "Eenmalig instellen" stap 5).
