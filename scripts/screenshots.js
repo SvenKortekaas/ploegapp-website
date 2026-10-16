@@ -14,6 +14,20 @@ const { chromium } = require('playwright-core');
 const { startApp, vul, controleerFictief } = require('./voorbeeld');
 
 const UIT = path.join(__dirname, '..', '.beelden');
+let stap = 'opstarten'; // voor de foutmelding: waar het script was
+
+/**
+ * Klikt op een element in de app. Eerst naar het midden van het scherm, zodat de vaste kop of
+ * tabbalk van de app er nooit overheen ligt, en wachten tot een melding (toast) weg is.
+ */
+async function klik(p, selector) {
+  stap = `klik op ${selector}`;
+  const el = p.locator(selector).first();
+  await el.waitFor({ state: 'visible' });
+  await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await p.waitForFunction(() => !document.querySelector('#melding:not([hidden])'), null, { timeout: 8000 }).catch(() => {});
+  await el.click();
+}
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 
 function browserOpties() {
@@ -91,6 +105,7 @@ async function main() {
       if (p.fouten.length) throw new Error(`${naam}: ${p.fouten.join('; ')}`);
       await p.screenshot({ path: path.join(UIT, `${naam}.png`), animations: 'disabled', caret: 'hide' });
       gemaakt.push(naam);
+      stap = `na ${naam}`;
     }
 
     const { komend, varen, vanavond, vorigeWeek } = g.avonden;
@@ -119,9 +134,9 @@ async function main() {
       // Vorige week: de vraag om (anonieme) feedback, en het formulier
       await ga(p, `#/avond/${vorigeWeek}`, '.feedback-vraag');
       await p.$eval('.feedback-vraag', (el) => el.scrollIntoView({ block: 'start' }));
-      await p.click('[data-feedback-geven]');
+      await klik(p, '[data-feedback-geven]');
       await p.waitForSelector('dialog[open] .feedback-form');
-      await p.click('dialog[open] .sterren-kies label:nth-of-type(4)');
+      await klik(p, 'dialog[open] .sterren-kies label:nth-of-type(4)');
       await p.fill('dialog[open] textarea[name="goed"]', 'Duidelijke uitleg en genoeg tijd om te oefenen.');
       await foto(p, 'lid-feedback-geven');
       await p.keyboard.press('Escape');
@@ -191,7 +206,7 @@ async function main() {
       await ga(p, `#/avond/${vorige}/presentie`, '#opslaan');
       await foto(p, 'planner-presentie');
       await ga(p, `#/avond/${vorigeWeek}`, '[data-feedback-lezen]');
-      await p.click('[data-feedback-lezen]');
+      await klik(p, '[data-feedback-lezen]');
       await p.waitForSelector('dialog[open].feedback-dialoog');
       await foto(p, 'planner-feedback');
       await p.keyboard.press('Escape');
@@ -234,9 +249,9 @@ async function main() {
       }
       await foto(p, 'beheer-links', { scroll: '#links-versturen' });
       // Leden uit Excel plakken (verzonnen namen), eerst controleren
-      await p.locator('#leden-import summary').click();
+      await klik(p, '#leden-import summary');
       await p.fill('#leden-plak', 'Roepnaam\tPloeg\tFuncties\tRol\nTom\tPloeg 1\tCH\t\nWillem\tPloeg 2\t\t\nYara\tPloeg 2\tBV, CH\tplanner');
-      await p.click('#leden-controleer');
+      await klik(p, '#leden-controleer');
       await p.waitForSelector('#leden-controle :is(table, .kaart, ul, p)');
       await foto(p, 'beheer-leden-import', { scroll: '#leden-import' });
       await ga(p, '#/beheer/instellingen', '#inst');
@@ -306,8 +321,13 @@ async function main() {
 }
 
 main().catch((e) => {
-  // Alleen de melding; geen app-log of broncode in het (publieke) CI-log
-  console.error(`::error::Screenshots mislukt: ${e.message.split('\n')[0]}`);
+  // Alleen de melding, de stap en wat Playwright zag (welke knop, wat erover lag); geen app-log of
+  // broncode in het (publieke) CI-log
+  const regels = e.message.replace(/\x1b\[[0-9;]*m/g, '').split('\n');
+  console.error(`::error::Screenshots mislukt (${stap}): ${regels[0]}`);
+  for (const r of regels.filter((x) => /waiting for|intercepts pointer events|not visible|not stable|detached|not enabled/.test(x)).slice(-6)) {
+    console.error(`  ${r.trim().slice(0, 200)}`);
+  }
   if (process.env.DEBUG) console.error(e);
   process.exit(1);
 });
