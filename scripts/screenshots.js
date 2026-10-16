@@ -22,11 +22,21 @@ let stap = 'opstarten'; // voor de foutmelding: waar het script was
  */
 async function klik(p, selector) {
   stap = `klik op ${selector}`;
-  const el = p.locator(selector).first();
-  await el.waitFor({ state: 'visible' });
-  await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
-  await p.waitForFunction(() => !document.querySelector('#melding:not([hidden])'), null, { timeout: 8000 }).catch(() => {});
-  await el.click();
+  try {
+    const el = p.locator(selector).first();
+    await el.waitFor({ state: 'visible' });
+    await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+    await p.waitForFunction(() => !document.querySelector('#melding:not([hidden])'), null, { timeout: 8000 }).catch(() => {});
+    await el.click();
+  } catch (e) {
+    // Wat er op het scherm stond: adres en het begin van de tekst (alleen verzonnen voorbeeldgegevens)
+    e.scherm = await p.evaluate(() => [
+      location.hash,
+      (document.querySelector('#app')?.innerText || document.body.innerText).replace(/\s+/g, ' ').slice(0, 400),
+      document.querySelector('dialog[open]')?.innerText.replace(/\s+/g, ' ').slice(0, 200),
+    ].filter(Boolean).join(' | ')).catch(() => '');
+    throw e;
+  }
 }
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 
@@ -328,6 +338,7 @@ main().catch((e) => {
   for (const r of regels.filter((x) => /waiting for|intercepts pointer events|not visible|not stable|detached|not enabled/.test(x)).slice(-6)) {
     console.error(`  ${r.trim().slice(0, 200)}`);
   }
+  if (e.scherm) console.error(`  scherm: ${e.scherm}`);
   if (process.env.DEBUG) console.error(e);
   process.exit(1);
 });
