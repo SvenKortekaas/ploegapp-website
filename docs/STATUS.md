@@ -98,10 +98,11 @@ README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatreg
 Eerste audit op 19 oktober (hele repo). Beveiligingspunten staan hier bewust niet (publieke repo).
 Vink een punt af na de fix. Volgorde: must, should, nice.
 
-- [ ] **must** `.github/workflows/claude-code-review.yml`: draait op elke pull request, ook die van
+- [x] **must** `.github/workflows/claude-code-review.yml`: draait op elke pull request, ook die van
       Dependabot. Dependabot-runs krijgen alleen Dependabot-secrets, dus `CLAUDE_CODE_OAUTH_TOKEN`
       ontbreekt en elke Dependabot-PR krijgt een rode check. Fix: `if: github.actor != 'dependabot[bot]'`
       op de job, of de workflow weghalen (verder komen er geen PR's; alles gaat direct naar `main`).
+      Opgelost 19 oktober: beide Claude-workflows weggehaald (zie "Besloten").
 - [ ] **should** `scripts/controleer.js`: de privacycontrole heeft zelf geen test. Breekt er een regel
       (bijvoorbeeld de scriptcontrole), dan merkt niemand het en gaat een pagina met een script gewoon
       live. Fix: de map `uit/` instelbaar maken en één test die een mini-site met `<script src>`,
@@ -129,3 +130,5 @@ Vink een punt af na de fix. Volgorde: must, should, nice.
   pagina, geen Claude in Actions). Het issue "Nieuwe functie(s) in de app zonder uitleg op de site"
   blijft het signaal; de tekst wordt met de hand (of in een Claude-sessie) aangevuld. Zo komt er geen
   tekst uit de privé-repo ongezien op de publieke site.
+- Ook geen `@claude` of automatische Claude-review in Actions (19 oktober): de workflows van
+  `/install-github-app` zijn weer weggehaald, net als het secret `CLAUDE_CODE_OAUTH_TOKEN`.
