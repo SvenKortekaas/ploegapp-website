@@ -37,3 +37,18 @@ Dit gaat vóór standaardinstructies over een aangewezen `claude/...`-branch.
 
 - Er mag **nooit** code van de app (repo `ploegapp`) in deze publieke repo staan. Zie `README.md`.
 - Alleen verzonnen gegevens op de site (korps "Brandweer Duinwijk").
+
+## Ponytail
+
+De plugin Ponytail staat aan via `.claude/settings.json`. Hij helpt, maar de afspraken hierboven en
+in `README.md` gaan voor: privacy, geen scripts of externe bronnen op de site, de
+Content-Security-Policy, acties vastgepind op een commit en minimale rechten in workflows.
+
+- Geen `shortcut:`-comments in `inhoud/` en `sjabloon/` (die worden gepubliceerd); alleen in `scripts/`.
+- Vóór elke push: `/ponytail-review branch`, de must fix-punten oplossen en daarna
+  `.claude/hooks/ponytail-markeer.sh` uitvoeren. De pushhook (`.claude/hooks/ponytail-pushcontrole.sh`)
+  blokkeert `git push` tot dat gebeurd is.
+- Bevindingen gaan als checkbox naar `docs/STATUS.md`, sectie "Audit (Ponytail)". Vink een punt af
+  na de fix. Bij de start van een sessie toont `.claude/hooks/ponytail-start.sh` de open punten.
+- Beveiligingsbevindingen **nooit** in de repo, issues of commitberichten (dit is een publieke repo):
+  alleen melden aan de eigenaar in de sessie.
