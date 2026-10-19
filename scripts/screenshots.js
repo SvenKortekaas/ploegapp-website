@@ -12,6 +12,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright-core');
 const { startApp, vul, controleerFictief } = require('./voorbeeld');
+const { browserOpties } = require('./browser');
 
 const UIT = path.join(__dirname, '..', '.beelden');
 let stap = 'opstarten'; // voor de foutmelding: waar het script was
@@ -39,17 +40,6 @@ async function klik(p, selector) {
   }
 }
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
-
-function browserOpties() {
-  if (process.env.CHROMIUM_PAD) return { executablePath: process.env.CHROMIUM_PAD };
-  const lokaal = '/opt/pw-browsers';
-  if (fs.existsSync(lokaal)) {
-    const map = fs.readdirSync(lokaal).filter((m) => /^chromium-\d+$/.test(m)).sort().pop();
-    const exe = map && path.join(lokaal, map, 'chrome-linux', 'chrome');
-    if (exe && fs.existsSync(exe)) return { executablePath: exe };
-  }
-  return { channel: 'chrome' }; // staat standaard op de GitHub-runners
-}
 
 async function main() {
   fs.rmSync(UIT, { recursive: true, force: true });

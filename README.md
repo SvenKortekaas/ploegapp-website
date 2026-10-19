@@ -22,6 +22,7 @@ screenshots van de nieuwste versie.
 | `sjabloon/` | Paginasjabloon, opmaak en icoon |
 | `scripts/voorbeeld.js` | Start de app en vult hem met verzonnen gegevens (via de gewone API) |
 | `scripts/screenshots.js` | Maakt de screenshots (Playwright) |
+| `scripts/browser.js` | Welke Chromium de screenshots en de controle gebruiken |
 | `scripts/bouw.js` | Bouwt de site in `uit/` |
 | `scripts/controleer.js` | Privacy- en kwaliteitscontrole vóór publicatie |
 | `scripts/dekking.js` | Nieuwe functie in de README van de app zonder uitleg hier? Dan komt er een issue. |

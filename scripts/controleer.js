@@ -23,6 +23,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright-core');
+const { browserOpties } = require('./browser');
 
 const UIT = path.join(__dirname, '..', 'uit');
 const TOEGESTAAN = new Set(['.html', '.css', '.png', '.webp', '.svg', '.txt', '.xml']);
@@ -43,17 +44,6 @@ function alleBestanden(map, basis = map) {
     const vol = path.join(map, e.name);
     return e.isDirectory() ? alleBestanden(vol, basis) : [path.relative(basis, vol)];
   });
-}
-
-function browserOpties() {
-  if (process.env.CHROMIUM_PAD) return { executablePath: process.env.CHROMIUM_PAD };
-  const lokaal = '/opt/pw-browsers';
-  if (fs.existsSync(lokaal)) {
-    const map = fs.readdirSync(lokaal).filter((m) => /^chromium-\d+$/.test(m)).sort().pop();
-    const exe = map && path.join(lokaal, map, 'chrome-linux', 'chrome');
-    if (exe && fs.existsSync(exe)) return { executablePath: exe };
-  }
-  return { channel: 'chrome' };
 }
 
 /** 6. Vindbaarheid (SEO). Lengtes volgens wat Google in de zoekresultaten toont. */
