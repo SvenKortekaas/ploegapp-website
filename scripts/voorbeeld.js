@@ -178,9 +178,8 @@ async function vul(basis, beheerToken) {
   });
 
   // Oefenavonden
-  const allePloegen = ploegen;
   const plan = (datum, oefeningen, extra = {}) =>
-    api('/avonden', 'POST', { titel: '', datum, start: '19:30', eind: '21:30', locatie: 'Kazerne Duinwijk', ploeg_ids: allePloegen, melden: false, oefeningen, ...extra });
+    api('/avonden', 'POST', { titel: '', datum, start: '19:30', eind: '21:30', locatie: 'Kazerne Duinwijk', ploeg_ids: ploegen, melden: false, oefeningen, ...extra });
 
   const ademlucht = (leider) => ({
     onderwerp: 'Ademlucht binnenbrand', voertuig_ids: [ts.id], oefenleider_ids: leider ? [id(leider)] : [],
