@@ -81,6 +81,9 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           npm ci --prefix .app --omit=dev --ignore-scripts --no-audit --no-fund --silent
 
+      - name: Werkt de privacycontrole zelf nog? (test)
+        run: npm test
+
       - name: Screenshots maken (fictieve gegevens)
         run: npm run screenshots
 

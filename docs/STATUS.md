@@ -102,14 +102,17 @@ Vink een punt af na de fix. Volgorde: must, should, nice.
       ontbreekt en elke Dependabot-PR krijgt een rode check. Fix: `if: github.actor != 'dependabot[bot]'`
       op de job, of de workflow weghalen (verder komen er geen PR's; alles gaat direct naar `main`).
       Opgelost 19 oktober: beide Claude-workflows weggehaald (zie "Besloten").
-- [ ] **should** `scripts/controleer.js`: de privacycontrole heeft zelf geen test. Breekt er een regel
+- [x] **should** `scripts/controleer.js`: de privacycontrole heeft zelf geen test. Breekt er een regel
       (bijvoorbeeld de scriptcontrole), dan merkt niemand het en gaat een pagina met een script gewoon
       live. Fix: de map `uit/` instelbaar maken en één test die een mini-site met `<script src>`,
       `style=` en een cookie controleert en verwacht dat de controle faalt.
-- [ ] **should** `scripts/screenshots.js:43-52` en `scripts/controleer.js:48-57`: `browserOpties()` staat
+      Opgelost 19 oktober: `scripts/controleer.test.js` (`npm test`, ook in de workflow).
+- [x] **should** `scripts/screenshots.js:43-52` en `scripts/controleer.js:48-57`: `browserOpties()` staat
       twee keer, precies gelijk; een wijziging moet op twee plekken. Fix: één keer, in een klein gedeeld bestand.
-- [ ] **should** `scripts/bekijk.js` en `scripts/controleer.js:31-34,162-171`: dezelfde lijst
+      Opgelost 19 oktober: `scripts/browser.js`.
+- [x] **should** `scripts/bekijk.js` en `scripts/controleer.js:31-34,162-171`: dezelfde lijst
       bestandstypes en hetzelfde mini-webservertje. Fix: één functie die beide gebruiken.
+      Opgelost 19 oktober: `webserver()` in `scripts/bekijk.js`.
 - [ ] **nice** `scripts/bouw.js:131-140`: `replaceAll` met gewone tekst; een titel of beschrijving met
       `$&` of `$'` wordt vervangen door stukken van het sjabloon. Fix: de functievorm `() => tekst`,
       zoals al bij `{{inhoud}}`.

@@ -25,6 +25,7 @@ screenshots van de nieuwste versie.
 | `scripts/browser.js` | Welke Chromium de screenshots en de controle gebruiken |
 | `scripts/bouw.js` | Bouwt de site in `uit/` |
 | `scripts/controleer.js` | Privacy- en kwaliteitscontrole vóór publicatie |
+| `scripts/controleer.test.js` | Test dat die controle echt afkeurt (`npm test`, ook in de workflow) |
 | `scripts/dekking.js` | Nieuwe functie in de README van de app zonder uitleg hier? Dan komt er een issue. |
 
 ## Tekst aanpassen
@@ -52,6 +53,7 @@ Node.js 22.5 of nieuwer en een checkout van de app ernaast:
 ```bash
 npm ci
 APP_PAD=../ploegapp npm run alles   # screenshots, bouwen, controleren
+npm test                            # werkt de privacycontrole zelf nog?
 npm run bekijk                      # http://localhost:8080
 ```
 

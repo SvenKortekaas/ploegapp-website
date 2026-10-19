@@ -25,7 +25,8 @@ const { chromium } = require('playwright-core');
 const { browserOpties } = require('./browser');
 const { webserver } = require('./bekijk');
 
-const UIT = path.join(__dirname, '..', 'uit');
+// Standaard uit/; een andere map kan als argument (gebruikt door controleer.test.js)
+const UIT = path.resolve(process.argv[2] || path.join(__dirname, '..', 'uit'));
 const TOEGESTAAN = new Set(['.html', '.css', '.png', '.webp', '.svg', '.txt', '.xml']);
 const TOEGESTANE_NAMEN = new Set(['.nojekyll']);
 const CSP = "default-src 'none'; img-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'";

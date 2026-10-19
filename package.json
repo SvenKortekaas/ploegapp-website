@@ -11,7 +11,8 @@
     "bouw": "node scripts/bouw.js",
     "controleer": "node scripts/controleer.js",
     "alles": "npm run screenshots && npm run bouw && npm run controleer",
-    "bekijk": "node scripts/bekijk.js"
+    "bekijk": "node scripts/bekijk.js",
+    "test": "node --test scripts/*.test.js"
   },
   "devDependencies": {
     "playwright-core": "1.64.0"
