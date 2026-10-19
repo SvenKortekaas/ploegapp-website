@@ -116,15 +116,16 @@ function main() {
       .join('\n');
     const titel = p.bestand === 'index.html' ? `Ploegapp – ${p.titel}` : `${p.titel} – Ploegapp`;
     const fout404 = p.bestand === '404.html';
+    // Steeds de functievorm (() => ...): dan blijft een $ in de tekst gewoon een $
     const html = sjabloon
-      .replaceAll('{{paginatitel}}', esc(titel))
-      .replaceAll('{{deeltitel}}', esc(p.bestand === 'index.html' ? titel : p.titel))
+      .replaceAll('{{paginatitel}}', () => esc(titel))
+      .replaceAll('{{deeltitel}}', () => esc(p.bestand === 'index.html' ? titel : p.titel))
       // De 404-pagina niet in zoekmachines; alle andere pagina's met hun vaste adres
-      .replace('{{zoekmachine}}', fout404 ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" href="${adres(p.bestand)}">\n`)
+      .replace('{{zoekmachine}}', () => (fout404 ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" href="${adres(p.bestand)}">\n`))
       .replace('{{gegevens}}', () => gegevens(p, inhoud))
-      .replaceAll('{{beschrijving}}', esc(p.beschrijving))
-      .replaceAll('{{menu}}', menuHtml)
-      .replaceAll('{{bijgewerkt}}', esc(bijgewerkt))
+      .replaceAll('{{beschrijving}}', () => esc(p.beschrijving))
+      .replaceAll('{{menu}}', () => menuHtml)
+      .replaceAll('{{bijgewerkt}}', () => esc(bijgewerkt))
       .replaceAll('{{pad}}', '')
       .replace('{{inhoud}}', () => inhoud.trim());
     fs.writeFileSync(path.join(UIT, p.bestand), html);
