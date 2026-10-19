@@ -34,12 +34,12 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       GitHub en geen probleem: de site krijgt elke dag verse screenshots.
 - [ ] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
       Daarna de open pull requests van Dependabot laten hercontroleren en mergen als ze groen zijn.
-- [ ] Beveiligingsinstellingen van de repo en het account zetten (eigenaar; README, "Eenmalig instellen" stap 5).
-- [ ] DNSSEC aanzetten bij Cloud86 en het domein verifiëren in GitHub (eigenaar; stap 6). Stand
-      1 oktober: geen DNSSEC, en `_github-pages-challenge-svenkortekaas.ploegapp.nl` heeft geen TXT-record.
-- [ ] Mail van `ploegapp.nl` nakijken (eigenaar; hoort bij de app, niet bij de site): het MX-record
-      wijst naar `ploegapp.nl` zelf, dus naar GitHub Pages, en het SPF-record (`+a +mx`) staat daardoor
-      de servers van GitHub toe als afzender. Waarschijnlijk hoort er alleen `ip4:45.82.189.150` in.
+- [x] Beveiligingsinstellingen van de repo en het account zetten (README, "Eenmalig instellen" stap 5).
+      Gedaan 19 oktober: acties vastpinnen verplicht, ruleset "main beschermen", Dependabot-updates,
+      private vulnerability reporting; tweestapsverificatie staat aan.
+- [x] Domein verifiëren in GitHub (stap 6): TXT-record staat er (19 oktober). DNSSEC kan niet bij
+      Cloud86; dat blijft zo.
+- [x] Mail van `ploegapp.nl` nakijken: gaat sinds 19 oktober via Fastmail (MX, SPF, DKIM en DMARC).
 
 ## Cookies, tracking en toestemming (16 oktober nagekeken, nog uit te voeren)
 
@@ -88,8 +88,7 @@ Statische site zonder scripts, cookies of formulieren; HTTPS afgedwongen, `http`
 door, geen `.git` of andere verborgen bestanden gepubliceerd. Workflows aangescherpt (minimale
 rechten, acties vastgepind, geen installatiescripts) en bewaakt door CodeQL en Dependabot; zie
 README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatregelen niet verzwakken.
-- [ ] Mail voor `info@ploegapp.nl` regelen bij Cloud86 (eigenaar). Het adres staat op de site, maar
-      het MX-record van `ploegapp.nl` wijst naar `ploegapp.nl` zelf (GitHub Pages): mail komt nu nergens aan.
+- [x] Mail voor `info@ploegapp.nl` regelen: komt sinds 19 oktober binnen bij Fastmail.
 - [ ] Google Search Console en Bing Webmaster Tools: domein `ploegapp.nl` toevoegen (verifiëren met een
       TXT-record bij Cloud86) en `https://ploegapp.nl/sitemap.xml` insturen (eigenaar).
 
