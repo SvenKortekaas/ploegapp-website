@@ -78,6 +78,7 @@ function leesPagina(bestand) {
     m[1].split('\n').map((r) => r.match(/^\s*([a-z]+):\s*(.*?)\s*$/)).filter(Boolean).map((r) => [r[1], r[2]])
   );
   if (!kop.titel || !kop.beschrijving) throw new Error(`${bestand}: titel en beschrijving zijn verplicht`);
+  if (kop.menu && !/^\d+$/.test(kop.menu)) throw new Error(`${bestand}: menu moet een getal zijn, niet "${kop.menu}"`);
   return { bestand, ...kop, menu: kop.menu ? +kop.menu : null, tekst: bron.slice(m[0].length) };
 }
 
