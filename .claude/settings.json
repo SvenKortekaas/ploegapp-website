@@ -21,6 +21,10 @@
           {
             "type": "command",
             "command": "git fetch --quiet origin main 2>/dev/null && { git merge --ff-only --quiet origin/main 2>/dev/null && echo \"Bijgewerkt tot origin/main ($(git rev-parse --short HEAD)).\" || echo \"LET OP: deze branch en origin/main lopen uiteen. Eerst uitzoeken voordat je iets wijzigt.\"; } || echo \"LET OP: kon GitHub niet bereiken; de code is mogelijk niet actueel.\""
+          },
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/ponytail-start.sh\""
           }
         ]
       }
