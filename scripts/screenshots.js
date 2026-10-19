@@ -103,6 +103,24 @@ async function main() {
       if (wachtOp) await p.waitForSelector(wachtOp, { state: 'attached' });
     }
 
+    /**
+     * Beheer → Leden laadt soms half in CI: de app tekent de pagina twee keer tegelijk opnieuw en stopt dan
+     * met "Cannot set properties of null (setting 'onsubmit')". Dan opnieuw laden, maximaal drie keer.
+     */
+    async function ledenHeel(p) {
+      for (let poging = 1; ; poging++) {
+        await p.waitForLoadState('networkidle');
+        await p.waitForTimeout(300);
+        if (await p.$('#links-versturen') && await p.$('#leden-import') && await p.$('#nieuw-lid')) return;
+        if (poging === 3) throw new Error('Beheer → Leden blijft half geladen');
+        console.log(`::warning::Beheer → Leden half geladen (poging ${poging}), opnieuw laden`);
+        // Alleen die bekende fout van de app wegstrepen; andere fouten blijven staan
+        p.fouten.splice(0, Infinity, ...p.fouten.filter((f) => !f.includes("setting 'onsubmit'")));
+        await p.reload();
+        await ga(p, '#/beheer/leden', '#nieuw-lid');
+      }
+    }
+
     /** Screenshot van wat er op het scherm staat; optioneel eerst naar een element scrollen. */
     async function foto(p, naam, { scroll } = {}) {
       if (scroll) {
@@ -253,9 +271,13 @@ async function main() {
       await ga(p, '#/beheer/leden', '#nieuw-lid');
       // Links versturen: wie heeft zijn link al, wie is ingelogd
       // Twee links "op een andere manier gegeven" afvinken, zodat alle drie de standen te zien zijn
+      await ledenHeel(p);
       for (const naam of ['Anouk', 'Chris']) {
-        await p.locator('#links-versturen li', { hasText: naam }).locator('[data-verstuurd]').check();
-        await p.waitForLoadState('networkidle');
+        stap = `${naam} afvinken`;
+        const vink = () => p.locator('#links-versturen li', { hasText: naam }).locator('[data-verstuurd]');
+        await vink().check({ timeout: 10000 }).catch(() => {}); // tekent de app halverwege opnieuw, dan hieronder nog eens
+        await ledenHeel(p);
+        if (!(await vink().isChecked())) { await vink().check(); await ledenHeel(p); }
       }
       await foto(p, 'beheer-links', { scroll: '#links-versturen' });
       // Leden uit Excel plakken (verzonnen namen), eerst controleren
