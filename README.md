@@ -119,7 +119,8 @@ gepubliceerd wordt; daarvoor:
   aanhouden gebeurt in een aparte job zonder vreemde code. Alleen `main` mag publiceren.
 - **Geen installatiescripts** van npm-pakketten (`npm ci --ignore-scripts`).
 - **Acties vastgepind op een commit**, niet op een versienummer dat iemand kan verplaatsen.
-  Dependabot (`.github/dependabot.yml`) houdt ze en `playwright-core` wekelijks actueel.
+  Dependabot (`.github/dependabot.yml`) houdt ze en `playwright-core` wekelijks actueel, met een
+  week wachttijd na elke nieuwe versie.
 - **CodeQL** (`.github/workflows/codeql.yml`) scant de workflows en scripts bij elke push en elke
   maandag; bevindingen staan onder Security → Code scanning.
 
