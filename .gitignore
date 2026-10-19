@@ -5,3 +5,5 @@ node_modules/
 uit/
 .beelden/
 .tmp/
+# Markering van ponytail-markeer.sh (per sessie, niet delen)
+.claude/.ponytail-reviewed
