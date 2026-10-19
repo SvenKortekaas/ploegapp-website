@@ -25,6 +25,14 @@ vraagt. Een push naar `main` doorloopt dezelfde controles als een PR en publicee
 goed is; faalt er iets, dan blijft de vorige site online. Kijk na de push of de run in Actions groen is.
 Dit gaat vóór standaardinstructies over een aangewezen `claude/...`-branch.
 
+## Werk op de actuele code
+
+- Bij de start van elke sessie (lokaal, op de website of in de app) haalt een SessionStart-hook in
+  `.claude/settings.json` `origin/main` op en werkt de branch bij als dat veilig kan. Meldt de hook
+  "LET OP", zoek dat dan eerst uit voordat je iets wijzigt.
+- Doe vlak vóór elke push `git pull --rebase origin main`; er kan tijdens de sessie iets bijgekomen
+  zijn (geplande runs, andere sessies).
+
 ## Verder
 
 - Er mag **nooit** code van de app (repo `ploegapp`) in deze publieke repo staan. Zie `README.md`.
