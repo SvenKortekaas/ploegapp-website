@@ -5,7 +5,7 @@
  * FICTIEVE gegevens: een verzonnen korps, verzonnen roepnamen en verzonnen oefeningen.
  *
  * De app staat nooit in deze repo: hij wordt tijdens het bouwen opgehaald in APP_PAD (standaard
- * .app/, staat in .gitignore). Echte gegevens kunnen hier niet in terechtkomen: de database wordt
+ * app/, staat in .gitignore). Echte gegevens kunnen hier niet in terechtkomen: de database wordt
  * hier zelf aangemaakt in een tijdelijke map, en `controleerFictief` weigert door te gaan als er
  * iets anders in staat dan wat dit script zelf heeft toegevoegd.
  */
@@ -16,7 +16,9 @@ const path = require('node:path');
 const net = require('node:net');
 const { spawn } = require('node:child_process');
 
-const APP_PAD = path.resolve(process.env.APP_PAD || path.join(__dirname, '..', '.app'));
+// Bewust geen map met een punt (.app): Express (sendFile) weigert dan bestanden uit dat pad, en het
+// kazernescherm gaf daardoor een 404
+const APP_PAD = path.resolve(process.env.APP_PAD || path.join(__dirname, '..', 'app'));
 
 // ---------- de fictieve gegevens ----------
 

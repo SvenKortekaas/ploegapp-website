@@ -1,6 +1,6 @@
 # Bouwt en publiceert ploegapp.nl.
 #  1. Haalt de nieuwste versie van de (privé) app op met een alleen-lezen token. De app komt NOOIT
-#     in deze repo of in de gepubliceerde site: hij staat alleen tijdelijk op de runner in .app/.
+#     in deze repo of in de gepubliceerde site: hij staat alleen tijdelijk op de runner in app/.
 #  2. Start de app met een lege database, vult die met fictieve gegevens en maakt screenshots.
 #  3. Bouwt de statische site en controleert hem: geen cookies, geen scripts, geen externe verzoeken,
 #     alleen html/css/png/svg/txt.
@@ -50,7 +50,7 @@ jobs:
       # Vangnet: er mag nooit code van de app in deze publieke repo staan
       - name: Geen app-code in deze repo
         run: |
-          if git ls-files | grep -E '^(\.app/|server\.js$|lib/|routes/|public/|test/|test-e2e/|Dockerfile$|fly\.toml$)'; then
+          if git ls-files | grep -E '^(app/|\.app/|server\.js$|lib/|routes/|public/|test/|test-e2e/|Dockerfile$|fly\.toml$)'; then
             echo "::error::Bovenstaande bestanden horen bij de app en mogen niet in deze repo staan."
             exit 1
           fi
@@ -80,7 +80,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/ploegapp
           token: ${{ secrets.PLOEGAPP_LEES_TOKEN }}
-          path: .app
+          path: app
           persist-credentials: false
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -91,7 +91,7 @@ jobs:
       - name: Afhankelijkheden
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
-          npm ci --prefix .app --omit=dev --ignore-scripts --no-audit --no-fund --silent
+          npm ci --prefix app --omit=dev --ignore-scripts --no-audit --no-fund --silent
 
       - name: Werkt de privacycontrole zelf nog? (test)
         run: npm test
@@ -113,7 +113,7 @@ jobs:
           node scripts/dekking.js
           if [ -f .tmp/dekking.md ]; then echo "rapport=$(base64 -w0 .tmp/dekking.md)" >> "$GITHUB_OUTPUT"; fi
 
-      # Alleen de gebouwde site gaat mee; .app/ en .beelden/ niet
+      # Alleen de gebouwde site gaat mee; app/ en .beelden/ niet
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:

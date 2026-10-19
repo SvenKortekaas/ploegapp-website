@@ -292,7 +292,9 @@ async function main() {
       const p = await context.newPage();
       p.fouten = [];
       p.on('pageerror', (e) => p.fouten.push(e.message));
-      await p.goto(`${app.basis}/kazerne?k=${encodeURIComponent(g.kazerneSleutel)}${weergave ? `&weergave=${weergave}` : ''}`);
+      const antwoord = await p.goto(`${app.basis}/kazerne?k=${encodeURIComponent(g.kazerneSleutel)}${weergave ? `&weergave=${weergave}` : ''}`);
+      // Geen foutpagina als screenshot op de site
+      if (!antwoord.ok()) throw new Error(`${naam}: de app gaf ${antwoord.status()}: ${(await antwoord.text()).slice(0, 100)}`);
       await p.waitForLoadState('networkidle');
       await p.waitForTimeout(300);
       if (p.fouten.length) throw new Error(`${naam}: ${p.fouten.join('; ')}`);

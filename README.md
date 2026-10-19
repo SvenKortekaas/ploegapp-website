@@ -8,7 +8,7 @@ screenshots van de nieuwste versie.
 - **Alleen verzonnen gegevens.** Het korps "Brandweer Duinwijk" en alle namen zijn verzonnen
   (`scripts/voorbeeld.js`). Het screenshotscript stopt als er iets anders in de database staat.
 - **Geen app-code in deze repo.** De app is privé en blijft dat. Hij staat alleen tijdelijk op de
-  runner (`.app/`, in `.gitignore`), en de workflow faalt als er ooit app-bestanden in deze repo staan.
+  runner (`app/`, in `.gitignore`), en de workflow faalt als er ooit app-bestanden in deze repo staan.
   De gepubliceerde site bevat alleen html, css, afbeeldingen (png, webp, svg), txt en de sitemap (xml).
 - **Geen cookies, trackers of externe diensten.** Geen JavaScript op de site (alleen gestructureerde gegevens voor zoekmachines, die niet worden uitgevoerd). `scripts/controleer.js`
   laadt elke pagina in Chromium en keurt de site af bij een cookie, andere opslag op het apparaat
