@@ -38,6 +38,19 @@ Dit gaat vóór standaardinstructies over een aangewezen `claude/...`-branch.
 - Er mag **nooit** code van de app (repo `ploegapp`) in deze publieke repo staan. Zie `README.md`.
 - Alleen verzonnen gegevens op de site (korps "Brandweer Duinwijk").
 
+## Privacy en toestemming
+
+De site heeft geen cookies, geen opslag op het apparaat (localStorage, sessionStorage, IndexedDB,
+service worker), geen tracking of analytics en niets van derden: geen scripts, fonts, iframes,
+embeds, pixels of CDN's. De Content-Security-Policy blijft alleen bronnen van de site zelf
+toestaan (`'self'`). `scripts/controleer.js` dwingt
+dit af bij elke build; zwak die controle niet af.
+
+Komt er ooit toch iets bij, toets het dan eerst aan de cookieregels. Een banner alleen als hij aan
+alle regels voldoet: weigeren even makkelijk als accepteren, niets laden vóór de keuze, keuzes per
+doel, intrekken altijd mogelijk, nee is nee, geen cookiemuur, toestemming vastleggen, B1-taal en
+Sec-GPC respecteren.
+
 ## Ponytail
 
 De plugin Ponytail staat aan via `.claude/settings.json`. Hij helpt, maar de afspraken hierboven en
