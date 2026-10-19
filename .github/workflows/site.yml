@@ -65,9 +65,11 @@ jobs:
             exit 1
           fi
           # GitHub geeft de vervaldatum mee als header bij elk verzoek met het token
-          VERVALT=$(curl -sfI -H "Authorization: Bearer $TOKEN" https://api.github.com/rate_limit \
-            | tr -d '\r' | sed -n 's/^github-authentication-token-expiration: //Ip') || true
-          if [ -n "$VERVALT" ]; then
+          KOPPEN=$(curl -s -D - -o /dev/null -H "Authorization: Bearer $TOKEN" https://api.github.com/rate_limit | tr -d '\r') || true
+          VERVALT=$(printf '%s\n' "$KOPPEN" | sed -n 's/^github-authentication-token-expiration: //Ip')
+          if [ -z "$VERVALT" ]; then
+            echo "Geen vervaldatum gevonden ($(printf '%s\n' "$KOPPEN" | head -1)): token zonder vervaldatum?"
+          else
             DAGEN=$(( ($(date -d "$VERVALT" +%s) - $(date +%s)) / 86400 ))
             echo "Token verloopt over $DAGEN dagen."
             if [ "$DAGEN" -lt 14 ]; then echo "dagen=$DAGEN" >> "$GITHUB_OUTPUT"; fi
