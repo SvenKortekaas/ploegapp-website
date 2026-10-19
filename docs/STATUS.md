@@ -10,8 +10,9 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
   verzonnen gegevens (Brandweer Duinwijk), bouwen, controleren, publiceren. Handmatig: Actions →
   "Site bouwen en publiceren" → Run workflow.
 - **Secrets** in deze repo: `PLOEGAPP_LEES_TOKEN` (alleen-lezen op de app-repo, Contents: read).
-  Optioneel `VERBODEN_WOORDEN`. Het token verloopt: twee weken van tevoren opent de workflow een issue
-  "Token PLOEGAPP_LEES_TOKEN vernieuwen".
+  Optioneel `VERBODEN_WOORDEN`. Het token heeft geen vervaldatum (nagekeken 19 oktober). Krijgt een
+  nieuw token er wel een, dan opent de workflow twee weken van tevoren een issue "Token
+  PLOEGAPP_LEES_TOKEN vernieuwen".
 - **Pages-omgeving** `github-pages`: alleen `main` mag publiceren.
 - **Dekking**: `inhoud/dekking.json` koppelt elke functie uit "Wat kan de app?" in de README van de
   app aan een plek op de site. Ontbreekt er iets, dan komt er een issue.
