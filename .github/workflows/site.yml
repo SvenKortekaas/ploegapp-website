@@ -8,7 +8,7 @@
 # Mislukt een stap, dan blijft de vorige versie van de site gewoon online.
 #
 # Eenmalig nodig: secret PLOEGAPP_LEES_TOKEN (fine-grained token, alleen de repo ploegapp,
-# alleen "Contents: read"). Zie README.md.
+# alleen "Contents: read"). Zie README.md. Verloopt het binnen twee weken, dan komt er een issue.
 name: Site bouwen en publiceren
 
 on:
@@ -41,6 +41,7 @@ jobs:
       contents: read
     outputs:
       dekking: ${{ steps.dekking.outputs.rapport }}
+      token_verloopt: ${{ steps.token.outputs.dagen }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,13 +55,22 @@ jobs:
             exit 1
           fi
 
-      - name: Token aanwezig?
+      - name: Token aanwezig? En verloopt hij niet binnenkort?
+        id: token
         env:
           TOKEN: ${{ secrets.PLOEGAPP_LEES_TOKEN }}
         run: |
           if [ -z "$TOKEN" ]; then
             echo "::error::Secret PLOEGAPP_LEES_TOKEN ontbreekt (zie README.md, 'Eenmalig instellen')."
             exit 1
+          fi
+          # GitHub geeft de vervaldatum mee als header bij elk verzoek met het token
+          VERVALT=$(curl -sfI -H "Authorization: Bearer $TOKEN" https://api.github.com/rate_limit \
+            | tr -d '\r' | sed -n 's/^github-authentication-token-expiration: //Ip') || true
+          if [ -n "$VERVALT" ]; then
+            DAGEN=$(( ($(date -d "$VERVALT" +%s) - $(date +%s)) / 86400 ))
+            echo "Token verloopt over $DAGEN dagen."
+            if [ "$DAGEN" -lt 14 ]; then echo "dagen=$DAGEN" >> "$GITHUB_OUTPUT"; fi
           fi
 
       - name: Nieuwste app ophalen (alleen op de runner, niet in de repo)
@@ -112,10 +122,11 @@ jobs:
     needs: bouwen
     if: >-
       github.ref == 'refs/heads/main' && github.event_name != 'pull_request' &&
-      (needs.bouwen.outputs.dekking != '' || github.event_name == 'schedule')
+      (needs.bouwen.outputs.dekking != '' || needs.bouwen.outputs.token_verloopt != '' ||
+      github.event_name == 'schedule')
     runs-on: ubuntu-24.04
     permissions:
-      issues: write   # issue bij een nieuwe functie zonder uitleg
+      issues: write   # issue bij een nieuwe functie zonder uitleg, of als het token bijna verloopt
       actions: write  # geplande run actief houden
     steps:
       - name: Issue bij een nieuwe functie zonder uitleg
@@ -130,6 +141,19 @@ jobs:
           NR=$(gh issue list --state open --search "$TITEL in:title" --json number --jq '.[0].number // empty')
           if [ -n "$NR" ]; then gh issue edit "$NR" --body-file dekking.md
           else gh issue create --title "$TITEL" --body-file dekking.md; fi
+
+      - name: Issue als het token binnen twee weken verloopt
+        if: needs.bouwen.outputs.token_verloopt != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          DAGEN: ${{ needs.bouwen.outputs.token_verloopt }}
+        run: |
+          TITEL="Token PLOEGAPP_LEES_TOKEN vernieuwen"
+          TEKST="Het token verloopt over $DAGEN dagen. Daarna kan de workflow de app niet meer ophalen en blijven de oude screenshots op de site staan. Maak een nieuw token (README.md, 'Eenmalig instellen', stap 1), zet het bij de secrets voor Actions en voor Dependabot, en sluit dit issue."
+          NR=$(gh issue list --state open --search "$TITEL in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$NR" ]; then gh issue edit "$NR" --body "$TEKST"
+          else gh issue create --title "$TITEL" --body "$TEKST"; fi
 
       # GitHub zet geplande runs in publieke repo's uit na 60 dagen zonder activiteit; dit houdt ze aan
       - name: Geplande run actief houden

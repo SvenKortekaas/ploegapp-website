@@ -66,7 +66,8 @@ De app zelf heeft zijn eigen afhankelijkheden nodig (`npm ci --omit=dev` in de a
    *Fine-grained tokens* → *Generate new token*:
    - Repository access: *Only select repositories* → `ploegapp`
    - Permissions → Repository permissions → **Contents: Read-only** (verder niets)
-   - Vervaldatum: bijvoorbeeld een jaar (zet een herinnering om hem te vernieuwen)
+   - Vervaldatum: bijvoorbeeld een jaar. Twee weken voor de vervaldatum opent de workflow vanzelf
+     een issue "Token PLOEGAPP_LEES_TOKEN vernieuwen".
 
    Zet hem in deze repo onder Settings → Secrets and variables → Actions → *New repository secret*,
    met de naam `PLOEGAPP_LEES_TOKEN`.
