@@ -10,7 +10,8 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
   verzonnen gegevens (Brandweer Duinwijk), bouwen, controleren, publiceren. Handmatig: Actions →
   "Site bouwen en publiceren" → Run workflow.
 - **Secrets** in deze repo: `PLOEGAPP_LEES_TOKEN` (alleen-lezen op de app-repo, Contents: read).
-  Optioneel `VERBODEN_WOORDEN`. Het token verloopt: vernieuwen voor de vervaldatum.
+  Optioneel `VERBODEN_WOORDEN`. Het token verloopt: twee weken van tevoren opent de workflow een issue
+  "Token PLOEGAPP_LEES_TOKEN vernieuwen".
 - **Pages-omgeving** `github-pages`: alleen `main` mag publiceren.
 - **Dekking**: `inhoud/dekking.json` koppelt elke functie uit "Wat kan de app?" in de README van de
   app aan een plek op de site. Ontbreekt er iets, dan komt er een issue.
@@ -32,8 +33,9 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       5 oktober). GitHub start ze wel 3 tot 6 uur later dan gepland: de run van 03:17 UTC komt rond
       09:00-10:00, die van 09:41 rond 14:00-16:00, die van 15:23 rond 18:30-20:00. Dat is normaal bij
       GitHub en geen probleem: de site krijgt elke dag verse screenshots.
-- [ ] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
+- [x] Secret `PLOEGAPP_LEES_TOKEN` ook als **Dependabot-secret** zetten (eigenaar; README stap 1).
       Daarna de open pull requests van Dependabot laten hercontroleren en mergen als ze groen zijn.
+      Gedaan 19 oktober; er staan geen pull requests meer open.
 - [x] Beveiligingsinstellingen van de repo en het account zetten (README, "Eenmalig instellen" stap 5).
       Gedaan 19 oktober: acties vastpinnen verplicht, ruleset "main beschermen", Dependabot-updates,
       private vulnerability reporting; tweestapsverificatie staat aan.
@@ -41,7 +43,7 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
       Cloud86; dat blijft zo.
 - [x] Mail van `ploegapp.nl` nakijken: gaat sinds 19 oktober via Fastmail (MX, SPF, DKIM en DMARC).
 
-## Cookies, tracking en toestemming (16 oktober nagekeken, nog uit te voeren)
+## Cookies, tracking en toestemming (16 oktober nagekeken, 19 oktober uitgevoerd)
 
 Getoetst aan de Telecommunicatiewet art. 11.7a (ePrivacy) en de AVG. Uitkomst voor de site: **in
 orde, geen banner nodig.** Geen cookies, geen `localStorage`/`sessionStorage`/IndexedDB, geen
@@ -51,24 +53,24 @@ GitHub Pages ziet als webserver het IP-adres; dat staat al op *Over deze site*. 
 verzameld dat verwijderd moet worden. (De app is apart getoetst: ook geen banner nodig.)
 
 Goedgekeurd om nog te doen (alleen deze repo):
-- [ ] `CLAUDE.md`: sectie "Privacy en toestemming": geen cookies, opslag op het apparaat,
+- [x] `CLAUDE.md`: sectie "Privacy en toestemming": geen cookies, opslag op het apparaat,
       tracking, analytics of iets van derden (scripts, fonts, iframes, embeds, pixels, CDN's);
       CSP blijft `'self'`. Komt er ooit iets bij, dan eerst toetsen aan de cookieregels; een
       banner alleen als hij aan alle regels voldoet (weigeren even makkelijk als accepteren,
       niets laden vóór de keuze, keuzes per doel, intrekken altijd mogelijk, nee is nee, geen
       cookiemuur, toestemming vastleggen, B1-taal, Sec-GPC respecteren). Let op: een eerdere
       wijziging aan `CLAUDE.md` werd door de toestemmingscontrole van de sessie geweigerd; zo
-      nodig voegt de eigenaar de tekst zelf toe.
-- [ ] `scripts/controleer.js`: naast cookies en verzoeken naar buiten ook afkeuren als na het
+      nodig voegt de eigenaar de tekst zelf toe. Gedaan 19 oktober.
+- [x] `scripts/controleer.js`: naast cookies en verzoeken naar buiten ook afkeuren als na het
       laden `localStorage`, `sessionStorage` of IndexedDB iets bevat, of als er een service worker
       is. Zo is de testregel "bij gewoon gebruik geen verzoeken naar derden of onnodige opslag"
-      bij elke build afgedwongen.
-- [ ] Privacytekst op *Privacy* en *Over deze site* (B1): "Ploegapp gebruikt geen cookies en
+      bij elke build afgedwongen. Gedaan 19 oktober, met een geval erbij in `controleer.test.js`.
+- [x] Privacytekst op *Privacy* en *Over deze site* (B1): "Ploegapp gebruikt geen cookies en
       volgt je niet. Op je telefoon bewaart de app alleen wat nodig is om te werken: je
       inlogsleutel en een paar keuzes die je zelf maakt, zoals welke ploeg je in het rooster
       ziet. Daarom vragen we geen toestemming en zie je geen cookiemelding. Er gaat niets naar
       advertentie- of analysebedrijven." Voor de site zelf: "Deze website bewaart niets op je
-      apparaat."
+      apparaat." Gedaan 19 oktober.
 
 Voor de app (andere repo, hier alleen genoteerd): `CLAUDE.md`-sectie, een e2e-test met een vaste
 lijst toegestane opslagsleutels en alleen verzoeken naar de eigen server, bij de meldingenvraag
