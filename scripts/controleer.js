@@ -6,8 +6,9 @@
  * 1. Alleen toegestane bestandssoorten: html, css, png, webp, svg, txt, xml (sitemap). Geen .js, .json, .map enz.,
  *    zodat er nooit code of data van de app in de publieke site terechtkomt.
  * 2. Geen verwijzingen naar andere websites in src, href, url() of @import (behalve mailto:).
- * 3. Elke pagina in Chromium laden: nul verzoeken naar een ander domein, nul cookies, geen
- *    JavaScript-fouten, geen kapotte interne links of afbeeldingen.
+ * 3. Elke pagina in Chromium laden: nul verzoeken naar een ander domein, nul cookies, niets in
+ *    localStorage, sessionStorage of IndexedDB, geen service worker, geen JavaScript-fouten, geen
+ *    kapotte interne links of afbeeldingen.
  * 4. Geen verboden woorden (bv. echte namen). De lijst komt uit de omgevingsvariabele
  *    VERBODEN_WOORDEN (komma-gescheiden, in CI een GitHub-secret), zodat hij zelf niet publiek is.
  * 5. Elke pagina heeft de Content-Security-Policy en het referrer-beleid uit het sjabloon, en geen
@@ -180,6 +181,14 @@ async function main() {
           }
           if (buiten.length) fout(`${f}: verzoek(en) naar buiten: ${[...new Set(buiten)].join(', ')}`);
           if (await p.evaluate(() => document.cookie)) fout(`${f}: document.cookie is niet leeg`);
+          // Ook geen andere opslag op het apparaat
+          const opslag = await p.evaluate(async () => [
+            localStorage.length && 'localStorage',
+            sessionStorage.length && 'sessionStorage',
+            (await indexedDB.databases()).length && 'IndexedDB',
+            (await navigator.serviceWorker.getRegistrations()).length && 'service worker',
+          ].filter(Boolean));
+          if (opslag.length) fout(`${f}: bewaart iets op het apparaat: ${opslag.join(', ')}`);
           // Interne links bestaan
           if (!bezocht.has(f)) {
             bezocht.add(f);
@@ -208,7 +217,7 @@ async function main() {
     for (const f of [...new Set(fouten)]) console.error(`::error::${f}`);
     process.exit(1);
   }
-  console.log(`Controle geslaagd: ${bestanden.length} bestanden, geen cookies, geen externe verzoeken, geen scripts.`);
+  console.log(`Controle geslaagd: ${bestanden.length} bestanden, geen cookies of andere opslag, geen externe verzoeken, geen scripts.`);
 }
 
 main().catch((e) => {

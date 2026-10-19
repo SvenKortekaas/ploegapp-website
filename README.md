@@ -11,7 +11,8 @@ screenshots van de nieuwste versie.
   runner (`.app/`, in `.gitignore`), en de workflow faalt als er ooit app-bestanden in deze repo staan.
   De gepubliceerde site bevat alleen html, css, afbeeldingen (png, webp, svg), txt en de sitemap (xml).
 - **Geen cookies, trackers of externe diensten.** Geen JavaScript op de site (alleen gestructureerde gegevens voor zoekmachines, die niet worden uitgevoerd). `scripts/controleer.js`
-  laadt elke pagina in Chromium en keurt de site af bij een cookie, script of verzoek naar buiten.
+  laadt elke pagina in Chromium en keurt de site af bij een cookie, andere opslag op het apparaat
+  (localStorage, sessionStorage, IndexedDB, service worker), script of verzoek naar buiten.
 
 ## Opbouw
 
@@ -116,7 +117,8 @@ gepubliceerd wordt; daarvoor:
 
 - **Op elke pagina** een Content-Security-Policy (alleen eigen afbeeldingen, opmaak en bestanden van de site zelf, verder niets)
   en `no-referrer`. `scripts/controleer.js` keurt de site af als die ontbreken of veranderd zijn, en
-  bij `<script>`, `on...=`, `style=`, `<base>`, formulieren, iframes, externe bronnen of cookies.
+  bij `<script>`, `on...=`, `style=`, `<base>`, formulieren, iframes, externe bronnen, cookies of
+  andere opslag op het apparaat.
 - **Workflows met zo min mogelijk rechten.** De job die de app en npm-pakketten draait, mag alleen
   lezen en houdt geen token vast (`persist-credentials: false`). Een issue maken en de geplande run
   aanhouden gebeurt in een aparte job zonder vreemde code. Alleen `main` mag publiceren.

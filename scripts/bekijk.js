@@ -9,6 +9,9 @@ const http = require('node:http');
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp',
   '.svg': 'image/svg+xml', '.txt': 'text/plain', '.xml': 'application/xml',
+  // .js mag niet op de site (controleer.js keurt het af), maar zo werkt een service worker hier
+  // net als op GitHub Pages en ziet de controle hem ook echt
+  '.js': 'text/javascript',
 };
 
 /** Webserver voor de bestanden in map. Onbekend adres: 404, met 404.html als die er is. */
