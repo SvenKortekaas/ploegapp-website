@@ -21,18 +21,14 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
 const { chromium } = require('playwright-core');
 const { browserOpties } = require('./browser');
+const { webserver } = require('./bekijk');
 
 const UIT = path.join(__dirname, '..', 'uit');
 const TOEGESTAAN = new Set(['.html', '.css', '.png', '.webp', '.svg', '.txt', '.xml']);
 const TOEGESTANE_NAMEN = new Set(['.nojekyll']);
 const CSP = "default-src 'none'; img-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'";
-const TYPES = {
-  '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp',
-  '.svg': 'image/svg+xml', '.txt': 'text/plain', '.xml': 'application/xml',
-};
 const SITE = 'https://ploegapp.nl/';
 const MAX_BEELD = 250 * 1024;
 
@@ -149,16 +145,7 @@ async function main() {
   vindbaarheid(bestanden);
 
   // 3. In de browser
-  const server = http.createServer((req, res) => {
-    const pad = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/\/$/, '/index.html');
-    const vol = path.join(UIT, path.normalize(pad));
-    if (!vol.startsWith(UIT) || !fs.existsSync(vol) || fs.statSync(vol).isDirectory()) {
-      res.writeHead(404);
-      return res.end();
-    }
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(vol)] || 'application/octet-stream' });
-    fs.createReadStream(vol).pipe(res);
-  });
+  const server = webserver(UIT);
   await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
   const basis = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch(browserOpties());
