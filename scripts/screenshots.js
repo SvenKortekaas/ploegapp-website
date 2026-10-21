@@ -53,8 +53,8 @@ async function main() {
     const g = await vul(app.basis, app.token);
     await controleerFictief(app.basis, app.token);
 
-    /** Telefoon van een (fictief) lid. Zonder naam: niet ingelogd. */
-    async function telefoon(naam, { iphone = false, donker = false, breed = false, opslag = {} } = {}) {
+    /** Telefoon van een (fictief) lid. Zonder naam: niet ingelogd. `welkom`: met de welkomstkaart van de eerste keer. */
+    async function telefoon(naam, { iphone = false, donker = false, breed = false, welkom = false, opslag = {} } = {}) {
       const context = await browser.newContext({
         locale: 'nl-NL',
         timezoneId: 'Europe/Amsterdam',
@@ -76,6 +76,8 @@ async function main() {
       if (naam) {
         // Installatievraag al "gezien", behalve waar we hem juist willen laten zien
         if (!iphone) await context.addInitScript(() => { try { localStorage.setItem('geinstalleerd', '1'); } catch {} });
+        // Welkomstkaart al "gezien" (de hoogste rol, dus voor iedereen), behalve waar we hem juist willen laten zien
+        if (!welkom) await context.addInitScript(() => { try { localStorage.setItem('welkom-gezien', 'beheerder'); } catch {} });
         // Voorkeuren die de app op het toestel onthoudt (bijv. de weergave van het indelen)
         await context.addInitScript((o) => { try { for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v); } catch {} }, opslag);
         await p.goto(`${app.basis}/?t=${g.leden[naam].token}`);
@@ -179,6 +181,14 @@ async function main() {
       await p.context().close();
     }
 
+    // --- De welkomstkaart bij de eerste keer inloggen (Hanna, lid)
+    {
+      const p = await telefoon('Hanna', { welkom: true });
+      await p.waitForSelector('#welkom');
+      await foto(p, 'lid-welkom');
+      await p.context().close();
+    }
+
     // --- Lid in donkere modus
     {
       const p = await telefoon('Eva', { donker: true });
@@ -209,6 +219,15 @@ async function main() {
       await p.waitForSelector('.kaart');
       await ga(p, `#/avond/${varen}`, '.oefening');
       await foto(p, 'planner-bezetting');
+      // Annuleren: alleen de pompoefening, met een reden; vooraf zie je het bericht en wie het krijgt
+      await klik(p, '#annuleer');
+      await p.waitForSelector('dialog[open] .annuleer-form');
+      await p.check('dialog[open] input[name="wat"][value="oefeningen"]');
+      await p.locator('dialog[open] .annuleer-oefeningen label', { hasText: 'Pompbediening' }).locator('input').check();
+      await p.fill('dialog[open] input[name="reden"]', 'Waterwinplaats afgesloten');
+      await p.waitForFunction(() => document.querySelector('dialog[open] .annuleer-voorbeeld')?.textContent.includes('afgesloten'));
+      await foto(p, 'planner-annuleren');
+      await klik(p, 'dialog[open] button[value=""]');
       await ga(p, `#/avond/${komend}/indeling`, '#auto');
       await foto(p, 'planner-indeling');
       await ga(p, `#/avond/${komend}`, '.oefening');
@@ -219,6 +238,10 @@ async function main() {
       await p.fill('.oef-blok input[name="onderwerp"]', 'Brand in een schuur');
       await p.locator('.oef-blok label', { hasText: '99-4531' }).locator('input[name="voertuig"]').check();
       await foto(p, 'planner-plannen');
+      // Bezetting aanpassen: standaard volgt hij uit de zitplaatsen, met het vinkje stel je hem zelf in
+      await p.check('.oef-blok input[name="eigen_bezetting"]');
+      await p.waitForSelector('.oef-blok .norm-blok:not([hidden])');
+      await foto(p, 'planner-bezetting-aanpassen', { scroll: '.oef-blok .bez-voertuig' });
       await ga(p, '#/eerder', '.kaart');
       const vorige = await p.$eval('a[href$="/presentie"], a[href^="#/avond/"]', (a) => a.getAttribute('href').match(/\d+/)[0]);
       await ga(p, `#/avond/${vorige}/presentie`, '#opslaan');

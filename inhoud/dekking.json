@@ -28,7 +28,7 @@
   "Herinnering sturen": "functies.html#bezetting",
   "Presentie": "functies.html#presentie",
   "Excel-downloads": "functies.html#presentie",
-  "Annuleren": "functies.html#plannen",
+  "Annuleren": "functies.html#annuleren",
   "Onderwerpen beheren": "functies.html#onderwerpen",
   "Functies zijn instelbaar": "functies.html#functies",
   "Rangorde": "functies.html#functies",
@@ -52,5 +52,11 @@
   "Notitie bij een oefening": "functies.html#notitie",
   "Pincode voor beheer": "functies.html#pincode",
   "Status": "functies.html#status",
-  "Toegankelijk": "functies.html#toegankelijk"
+  "Toegankelijk": "functies.html#toegankelijk",
+  "Welkomstkaart": "functies.html#welkom",
+  "Volgende stap": "functies.html#volgende-stap",
+  "Minimale bezetting per oefening": "functies.html#bezetting-aanpassen",
+  "Voorlopig indelen": "functies.html#voorlopig",
+  "Past zich vanzelf aan de ruimte aan": "functies.html#kazernescherm",
+  "Geen cookies, geen tracking, geen cookiebanner nodig": "privacy.html#cookies"
 }

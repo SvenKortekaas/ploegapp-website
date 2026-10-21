@@ -177,6 +177,7 @@ async function vul(basis, beheerToken) {
     kazerne_namen: true,
     kazerne_kop: 'Oefenavond Duinwijk',
     aanwezig_qr: true, // aanwezig melden met de QR-code (feedback staat standaard aan)
+    reageren_sluit_uren: 24, // reageren sluit de dag ervoor op dezelfde tijd ("Reageren kan tot …")
   });
 
   // Oefenavonden
@@ -193,8 +194,8 @@ async function vul(basis, beheerToken) {
 
   // Iedereen die bij een avond hoort, antwoordt; zo zijn de bezettingskleuren voorspelbaar
   const antwoorden = async (avond, lijst) => {
-    for (const [naam, status, opmerking] of lijst) {
-      await api(`/avonden/${avond.id}/antwoord`, 'PUT', { lid_id: id(naam), status, opmerking });
+    for (const [naam, status] of lijst) {
+      await api(`/avonden/${avond.id}/antwoord`, 'PUT', { lid_id: id(naam), status });
     }
   };
   const ja = (namen) => namen.map((n) => [n, 'ja']);
@@ -252,8 +253,8 @@ async function vul(basis, beheerToken) {
   const komend = await plan(dag(4), [ademlucht('Jeroen'), beknelling('Anouk')], { melden: true });
   await antwoorden(komend, [
     ...ja(['Karin', 'Bas', 'Chris', 'Dirk', 'Fleur', 'Gijs', 'Hanna', 'Ivo', 'Jesse', 'Kim', 'Lars', 'Niels', 'Pim', 'Sem']),
-    ['Eva', 'ja', 'Iets later, rond 19:45'],
-    ['Mila', 'misschien', 'Afhankelijk van mijn dienst'],
+    ['Eva', 'ja'],
+    ['Mila', 'misschien'],
     ['Olga', 'nee'],
   ]);
   await api(`/avonden/${komend.id}/indeling/automatisch`, 'POST', {});
@@ -298,7 +299,7 @@ async function vul(basis, beheerToken) {
     const a = await api(`/avonden/${komend.id}`);
     const kandidaten = a.oefeningen.flatMap((o) => o.ingedeeld).filter((d) => !NIET_INLOGGEN.includes(d.naam));
     const afmelder = kandidaten.find((d) => d.functie_id === functie.MS) || kandidaten[0];
-    if (afmelder) await apiVan(basis, leden[afmelder.naam].token)(`/avonden/${komend.id}/antwoord`, 'PUT', { lid_id: id(afmelder.naam), status: 'nee', opmerking: 'Toch dienst' });
+    if (afmelder) await apiVan(basis, leden[afmelder.naam].token)(`/avonden/${komend.id}/antwoord`, 'PUT', { lid_id: id(afmelder.naam), status: 'nee' });
   }
 
   const inst = await api('/instellingen');

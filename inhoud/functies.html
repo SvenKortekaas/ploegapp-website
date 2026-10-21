@@ -28,6 +28,7 @@ menutekst: Functies
           <li><a href="#aanwezig">Aanwezig melden</a></li>
           <li><a href="#agenda">Agenda en delen</a></li>
           <li><a href="#installeren">Geen installatie</a></li>
+          <li><a href="#welkom">Welkom en uitleg</a></li>
           <li><a href="#handleiding">Handleiding</a></li>
           <li><a href="#toegankelijk">Donker en grote letters</a></li>
         </ul>
@@ -37,8 +38,11 @@ menutekst: Functies
         <ul>
           <li><a href="#plannen">Oefenavonden plannen</a></li>
           <li><a href="#jaarplanning">Jaarplanning in één keer</a></li>
-          <li><a href="#bezetting">Bezetting in de gaten</a></li>
+          <li><a href="#annuleren">Annuleren</a></li>
+          <li><a href="#bezetting-aanpassen">Bezetting aanpassen</a></li>
+          <li><a href="#bezetting">Bezetting en volgende stap</a></li>
           <li><a href="#indelen">Automatisch indelen</a></li>
+          <li><a href="#voorlopig">Voorlopig indelen</a></li>
           <li><a href="#indeelbord">Het indeelbord</a></li>
           <li><a href="#late-afmelding">Late afmelding</a></li>
           <li><a href="#oefenleiders">Oefenleiders</a></li>
@@ -73,8 +77,9 @@ menutekst: Functies
     <div class="functie" id="poll">
       <div>
         <h2>Reageren met één tik</h2>
-        <p>Bij elke oefenavond tik je <b>Ja</b>, <b>Misschien</b> of <b>Nee</b>, eventueel met een korte opmerking zoals "kom later". Nog eens tikken trekt je antwoord in.</p>
+        <p>Bij elke oefenavond tik je <b>Ja</b>, <b>Misschien</b> of <b>Nee</b>. Nog eens tikken trekt je antwoord in. Een opmerking erbij kan bewust niet: daar zou zomaar een reden van afwezigheid in kunnen komen, en die hoort niet in de app.</p>
         <p>Je ziet meteen <b>wie er komt</b> en of er genoeg mensen en functies zijn: groen, oranje of rood, met wat er ontbreekt, bijvoorbeeld "mist CH".</p>
+        <p id="reageren-sluiten"><b>Reageren sluit op tijd</b> als de beheerder dat instelt, bijvoorbeeld de dag ervoor op dezelfde tijd. Bij de avond staat tot wanneer het kan, en wie nog niets of "misschien" gaf, krijgt kort daarvoor een laatste melding. Daarna wijzigt alleen een planner je antwoord nog; de app zegt erbij welke planners je kunt bereiken.</p>
       </div>
       [[telefoon lid-avond-reageren | Ben jij erbij?]]
     </div>
@@ -102,6 +107,7 @@ menutekst: Functies
         <h2>Meldingen, en een belletje dat ze bewaart</h2>
         <p>Je krijgt een pushmelding bij een nieuwe oefenavond, je indeling, wijzigingen en annuleringen. Heb je nog niet gereageerd, dan volgt vanzelf een herinnering (standaard 7, 3 en 1 dag vooraf om 19:00 uur).</p>
         <p>Tik op een melding en je komt direct op de goede plek in de app. Alle meldingen staan ook achter het <b>belletje</b> bovenin, met het aantal ongelezen erbij, ook op het app-icoon. Ook als je pushmeldingen uit hebt staan.</p>
+        <p>Staan je meldingen uit, dan vraagt de app bij het openen of ze aan mogen. Kies je <b>Later</b>, dan vraagt hij het een week niet.</p>
       </div>
       [[telefoon lid-meldingen | De meldingenpagina achter het belletje]]
     </div>
@@ -159,12 +165,22 @@ menutekst: Functies
         <h2>Geen app store, geen wachtwoord</h2>
         <p>Ploegapp is een webapp. Je opent je persoonlijke link en bent meteen ingelogd. Zet hem op je beginscherm, dan werkt hij als een gewone app, inclusief meldingen.</p>
         <p>De app legt zelf uit hoe dat moet, voor iPhone en Android. Die vraag komt terug tot hij op je beginscherm staat.</p>
+        <p>Weet de app op je beginscherm nog niet wie je bent (dat kan op een iPhone)? Dan plak je je persoonlijke link één keer in het welkomstscherm, en je bent binnen.</p>
         <p><b>Altijd actueel:</b> kom je na een tijdje terug in de app, dan haalt hij de nieuwste gegevens op en laadt hij een nieuwe versie. Wat je aan het invullen bent, blijft staan.</p>
       </div>
       [[telefoon installeren | Uitleg om de app op je beginscherm te zetten]]
     </div>
 
-    <div class="functie" id="handleiding">
+    <div class="functie" id="welkom">
+      <div>
+        <h2>Welkom en uitleg op de plek</h2>
+        <p>De eerste keer dat je inlogt, staat bovenaan een <b>welkomstkaart</b>: in een paar regels hoe het werkt, voor jouw rol. Een lid leest hoe reageren en afwezigheid werken, een planner en beheerder de stappen van een oefenavond. Weg met <b>Begrepen</b>. Word je later planner, dan zie je de kaart voor die rol nog één keer.</p>
+        <p>Het <b>?</b> bovenin opent de uitleg bij het scherm waar je bent. Labels zeggen zelf wat ze betekenen, en onder het rooster staat wat de afkortingen in de kalender betekenen.</p>
+      </div>
+      [[telefoon lid-welkom | De welkomstkaart bij de eerste keer inloggen]]
+    </div>
+
+    <div class="functie om" id="handleiding">
       <div>
         <h2>Een handleiding in de app</h2>
         <p>Hoe werkt het ook alweer? De <b>handleiding</b> staat in de app zelf, onder Ik of via de ⓘ-knopjes op de schermen. In gewone taal, per rol, met afbeeldingen.</p>
@@ -173,7 +189,7 @@ menutekst: Functies
       [[telefoon handleiding | De handleiding in de app]]
     </div>
 
-    <div class="functie om" id="toegankelijk">
+    <div class="functie" id="toegankelijk">
       <div>
         <h2>Donker, grote letters en schermlezers</h2>
         <p>Staat je telefoon op donkere modus, dan volgt de app vanzelf.</p>
@@ -195,11 +211,34 @@ menutekst: Functies
         <p>Een avond heeft één of meer oefeningen, bijvoorbeeld twee groepen die elk iets anders oefenen. Per ploeg, of voor meerdere ploegen samen (combi), met locatie, tijden en eventueel een deadline om te reageren.</p>
         <ul class="vink">
           <li>Per oefening de voertuigen, een oefenleider en links naar het draaiboek</li>
-          <li><b>Annuleren</b>: de avond blijft zichtbaar als geannuleerd en iedereen krijgt bericht</li>
+          <li>Een <b>reeks</b> in één keer, bijvoorbeeld tien weken elke dinsdag</li>
           <li><b>Definitief verwijderen</b> kan alleen vanuit de planning, na een bevestiging</li>
         </ul>
       </div>
       [[telefoon planner-plannen | Een oefenavond plannen]]
+    </div>
+
+    <div class="functie om" id="annuleren">
+      <div>
+        <h2>Annuleren: de hele avond of één oefening</h2>
+        <p>Gaat er iets niet door, dan annuleer je <b>de hele oefenavond</b> of <b>alleen een of meer oefeningen</b>, terwijl de rest gewoon doorgaat.</p>
+        <ul class="vink">
+          <li>Een korte <b>reden</b> erbij, zoals "weeralarm". Die staat ook op het kazernescherm.</li>
+          <li>Kies het bericht: de standaardtekst, een eigen tekst of geen bericht. Vooraf zie je <b>wie het krijgt</b>: bij een oefening alleen wie erbij hoort.</li>
+          <li>De oefenleider van een geannuleerde oefening is daarna beschikbaar voor de andere oefeningen.</li>
+          <li>Doorgestreept blijft het zichtbaar, en met <b>Gaat toch door</b> zet je het terug.</li>
+        </ul>
+      </div>
+      [[telefoon planner-annuleren | Eén oefening annuleren, met een reden en een bericht]]
+    </div>
+
+    <div class="functie" id="bezetting-aanpassen">
+      <div>
+        <h2>Minimale bezetting per oefening</h2>
+        <p>Zonder voertuig vul je zelf in hoeveel mensen er minimaal nodig zijn, in totaal en per functie. Kies je een voertuig, dan volgt de bezetting vanzelf uit de zitplaatsen.</p>
+        <p>Kan een oefening ook met minder mensen door, of blijft het voertuig staan en is er geen chauffeur nodig? Vink <b>Bezetting aanpassen</b> aan en verander alleen wat anders moet. Dat telt overal: het bolletje, de meldingen, het kazernescherm en het automatisch indelen. Planners zien bij de avond het label <i>aangepast</i>.</p>
+      </div>
+      [[telefoon planner-bezetting-aanpassen | Bezetting aanpassen bij een oefening met voertuig]]
     </div>
 
     <div class="functie om" id="jaarplanning">
@@ -214,16 +253,17 @@ menutekst: Functies
 
     <div class="functie" id="bezetting">
       <div>
-        <h2>Bezetting in de gaten</h2>
+        <h2>Bezetting en de volgende stap</h2>
         <ul class="vink">
           <li><span class="bol groen"></span><b>Voldoende</b>: genoeg mensen en alle functies gevuld</li>
           <li><span class="bol oranje"></span><b>Krap</b>: alleen als de "misschien"-ers komen</li>
           <li><span class="bol rood"></span><b>Onvoldoende</b>, met wat er mist ("mist CH")</li>
         </ul>
+        <p id="volgende-stap">Bovenaan elke avond staat voor planners de <b>volgende stap</b>, met een knop ernaartoe: wachten op reacties, indelen, publiceren, nieuwe aanmeldingen indelen, of na afloop de presentie invullen. In het overzicht staat hij klein bij de avond.</p>
         <p>Planners krijgen een waarschuwing als een avond kort vooraf onvoldoende bezet is, een melding zodra hij voldoende wordt, en opnieuw als hij weer onvoldoende wordt.</p>
         <p>Zelf een <b>herinnering sturen</b> aan wie nog niet reageerde kan ook (maximaal één keer per uur), net als <b>namens iemand invullen</b>, bijvoorbeeld na een telefoontje.</p>
       </div>
-      [[telefoon planner-bezetting | Bezetting: 8 van de 9 plekken, krap]]
+      [[telefoon planner-bezetting | De volgende stap en de bezetting: krap]]
     </div>
 
     <div class="functie om" id="indelen">
@@ -231,10 +271,12 @@ menutekst: Functies
         <h2>Automatisch en eerlijk indelen</h2>
         <ol>
           <li>Eerst de functies die nodig zijn, zoals bevelvoerder en chauffeur, volgens de <a href="#functies">rangorde</a>.</li>
+          <li>Dan zorgt de app dat <b>elke oefening haar minimale bezetting haalt</b>. Zijn er te weinig mensen voor alles, dan verdeelt hij eerlijk, en beslist de planner of hij samenvoegt of annuleert.</li>
           <li>Dan krijgt ieder bij voorkeur een oefening die hij <b>nog niet of het langst niet</b> heeft gedaan, op basis van wie er echt was. Week 3 oefening A en B, week 4 dezelfde A en B: iedereen wisselt.</li>
           <li>Tot slot worden de groepen evenredig verdeeld.</li>
         </ol>
         <p>Met de hand geplaatste mensen (📌) blijven staan. Na <b>publiceren</b> krijgt iedereen een melding met zijn oefening, voertuig en functie.</p>
+        <p id="voorlopig"><b>Voorlopig indelen:</b> voor een verplichte oefening ver vooruit deel je ook wie nog niet reageerde alvast in. Bij het publiceren krijgen zij de vraag of ze komen. Tot ze ja zeggen, tellen ze als misschien en staat er een <b>?</b> achter hun naam. Wie nee zei of afwezig is, deel je niet in.</p>
       </div>
       [[telefoon planner-indeling | Indelen in een lijst]]
     </div>
@@ -242,7 +284,7 @@ menutekst: Functies
     <div class="functie breed-beeld" id="indeelbord">
       <div>
         <h2>Het indeelbord</h2>
-        <p>Op een groot scherm deel je in op het <b>indeelbord</b>: per oefening en per voertuig de stoelen, met de functie erbij. Sleep een naam naar een stoel, of tik eerst op een naam en dan op een stoel. Op een bezette stoel ruil je.</p>
+        <p>Op een groot scherm deel je in op het <b>indeelbord</b>: per oefening en per voertuig de stoelen, met de functie erbij. Sleep een naam naar een stoel, met de muis of op een iPad of tablet met je vinger, of tik eerst op een naam en dan op een stoel. Op een bezette stoel ruil je.</p>
         <p>Alleen de stoelen waar iemand op mag, lichten op. Een chauffeur kan dus niet per ongeluk op de plek van de bevelvoerder belanden.</p>
       </div>
       [[breed planner-bord | Het indeelbord op een laptop]]
@@ -291,10 +333,10 @@ menutekst: Functies
       <div>
         <h2>Presentie, oefenuren en Excel</h2>
         <p>Na een avond vinkt de planner af wie er echt was, en bij welke oefening. Daaruit volgen de oefenuren per lid per jaar.</p>
-        <p>Staat <a href="#aanwezig">aanwezig melden</a> aan, dan toont de planner of oefenleider op de avond een QR-code (of de tv in de kazerne). Wie scant, is bij de presentie al aangevinkt.</p>
+        <p>Staat <a href="#aanwezig">aanwezig melden</a> aan, dan toont de planner of oefenleider op de avond een QR-code (of de tv in de kazerne). Wie scant, is bij de presentie al aangevinkt, en telt mee voor de oefenuren zodra de planner de presentie opslaat.</p>
         <p>Planners kunnen downloaden voor <b>Excel</b>:</p>
         <ul class="vink">
-          <li>de antwoorden per avond, met opmerking, indeling en presentie</li>
+          <li>de antwoorden per avond, met indeling en presentie</li>
           <li>een jaaroverzicht van alle polls per lid, met reactiepercentage</li>
           <li>de oefenuren per lid</li>
           <li>een <b>vakbekwaamheidsoverzicht</b> over een zelfgekozen periode: per lid elke oefening met datum, onderwerp en uren, handig voor het jaarverslag</li>
@@ -344,7 +386,7 @@ menutekst: Functies
       <div>
         <h2>Leden in één keer toevoegen</h2>
         <p>Plak een tabel uit Excel met roepnaam, ploeg, functies en rol. De app controleert eerst alles en laat zien wat hij gaat aanmaken. Pas als je bevestigt, worden de leden toegevoegd.</p>
-        <p>Een lijst roepnamen met dezelfde ploeg en functies kan ook.</p>
+        <p>Een lijst roepnamen met dezelfde ploeg en functies kan ook. Alleen de roepnaam, geen achternaam: dat staat ook bij elk naamveld, want de AVG vraagt om niet meer gegevens dan nodig.</p>
       </div>
       [[telefoon beheer-leden-import | Leden uit Excel plakken en eerst controleren]]
     </div>
@@ -390,9 +432,11 @@ menutekst: Functies
       <div>
         <h2>Het kazernescherm</h2>
         <p>Een alleen-lezen weergave voor een <b>tv in de kazerne</b> of een iframe op de website van het korps. Op de oefendag staat de avond groot in beeld: per oefening wie op welk voertuig zit, de oefenleiders en de voertuigkoppels. Op andere dagen zie je de komende avonden.</p>
+        <p>Het scherm <b>past zich vanzelf aan de ruimte aan</b>: op een tv grote letters, in een klein vak op een website kleiner. Past niet alles, dan laat het eerst details weg en als laatste een avond.</p>
         <ul class="vink">
           <li>De link stel je samen in de instellingen: weergave, donker of licht thema, aantal avonden en hoogte van de iframe</li>
-          <li>Op de tv kan de <a href="#aanwezig">QR-code om aanwezig te melden</a> erbij staan, nooit in de iframe op een website</li>
+          <li>Op de tv kan de <a href="#aanwezig">QR-code om aanwezig te melden</a> erbij staan, met een eigen sleutel in de link voor de tv; nooit in de iframe op een website</li>
+          <li>Een geannuleerde avond of oefening staat er doorgestreept op, met de reden</li>
           <li>Eigen kleur en koptekst</li>
           <li>Onderaan klein "Gemaakt met Ploegapp"; uit te zetten in de instellingen</li>
           <li>Namen alleen als je dat aanzet, en je bepaalt welke websites het mogen tonen</li>
@@ -411,7 +455,7 @@ menutekst: Functies
   <div class="breed">
     <h2 class="groep">Privacy, veiligheid en betrouwbaarheid</h2>
     <div class="kaarten">
-      <div class="kaart"><h3>AVG</h3><p>Alleen roepnamen, geen reden van afwezigheid, automatisch opruimen volgens bewaartermijnen. Leden kunnen hun gegevens inzien en hun account zelf verwijderen.</p><p><a href="privacy.html">Meer over privacy →</a></p></div>
+      <div class="kaart"><h3>AVG</h3><p>Alleen roepnamen, geen reden van afwezigheid, automatisch opruimen volgens bewaartermijnen. Leden kunnen hun gegevens inzien en hun account zelf verwijderen. Geen cookies en geen tracking, dus ook geen cookiemelding.</p><p><a href="privacy.html">Meer over privacy →</a></p></div>
       <div class="kaart"><h3>Beveiliging</h3><p>Onraadbare persoonlijke links, een aparte agendalink waarmee je niet kunt inloggen, een <a href="#pincode">pincode voor beheer</a>, een blokkade na mislukte pogingen en strikte beveiligingsinstellingen. Geen cookies of externe scripts.</p></div>
       <div class="kaart"><h3>Geen dataverlies</h3><p>Database op een blijvende schijf, dagelijkse back-ups, een doorlopende back-up naar EU-opslag, een kopie vóór elke databasewijziging en elke week een automatische hersteloefening.</p></div>
       <div class="kaart"><h3>Altijd een werkende versie</h3><p>Bij elke wijziging draaien automatische tests. Alleen als alles slaagt, gaat de nieuwe versie live. Mislukt de controle daarna, dan gaat de app vanzelf terug naar de vorige versie.</p></div>
