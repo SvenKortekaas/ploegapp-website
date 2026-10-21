@@ -92,8 +92,10 @@ door, geen `.git` of andere verborgen bestanden gepubliceerd. Workflows aangesch
 rechten, acties vastgepind, geen installatiescripts) en bewaakt door CodeQL en Dependabot; zie
 README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatregelen niet verzwakken.
 - [x] Mail voor `info@ploegapp.nl` regelen: komt sinds 19 oktober binnen bij Fastmail.
-- [ ] Google Search Console en Bing Webmaster Tools: domein `ploegapp.nl` toevoegen (verifiëren met een
-      TXT-record bij Cloud86) en `https://ploegapp.nl/sitemap.xml` insturen (eigenaar).
+- [x] Google Search Console: domein `ploegapp.nl` geverifieerd (TXT-record bij Cloud86) en
+      `https://ploegapp.nl/sitemap.xml` ingestuurd en gelezen (21 oktober).
+- [ ] Bing Webmaster Tools: *Importeren vanuit Google Search Console*, dan komen domein en sitemap
+      vanzelf mee (eigenaar).
 
 ## Audit (Ponytail)
 
