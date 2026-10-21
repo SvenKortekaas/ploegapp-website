@@ -151,6 +151,8 @@ async function main() {
       await foto(p, 'lid-ik');
       await foto(p, 'lid-agenda', { scroll: 'h2:has-text("in je agenda")' });
       await foto(p, 'lid-mijn-oefeningen', { scroll: kaartMet('Mijn oefeningen') });
+      await ga(p, '#/links', '#app .kaart');
+      await foto(p, 'lid-links');
       await ga(p, '#/meldingen', '#app');
       await foto(p, 'lid-meldingen');
       // Notitie bij zijn oefening: wat je vooraf moet weten

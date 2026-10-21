@@ -150,6 +150,8 @@ jobs:
           EERSTE=$(echo "$NRS" | head -n1)
           if [ -n "$EERSTE" ]; then gh issue edit "$EERSTE" --body-file dekking.md
           else gh issue create --title "$TITEL" --body-file dekking.md; fi
+          # Dubbele van vroeger: alleen het eerste blijft open
+          for NR in $(echo "$NRS" | tail -n +2); do gh issue close "$NR" --reason "not planned" --comment "Dubbel; zie #$EERSTE."; done
 
       - name: Issue als het token binnen twee weken verloopt
         if: needs.bouwen.outputs.token_verloopt != ''

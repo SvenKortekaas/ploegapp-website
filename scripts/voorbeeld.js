@@ -173,6 +173,18 @@ async function vul(basis, beheerToken) {
   // De boot in onderhoud rond de nieuwe datum van het planscherm ("niet beschikbaar" bij het plannen)
   await api(`/voertuigen/${boot.id}`, 'PUT', { niet_beschikbaar: { van: dag(23), tot: dag(30), reden: 'Onderhoud' } });
 
+  // Tabblad Links: vaste links voor iedereen, in groepen
+  await api('/links', 'PUT', { groepen: [
+    { groep: 'Draaiboeken', links: [
+      { titel: 'Draaiboek ademlucht', url: 'https://duinwijk.example/draaiboek-ademlucht.pdf' },
+      { titel: 'Draaiboek waterongevallen', url: 'https://duinwijk.example/draaiboek-water.pdf' },
+    ] },
+    { groep: 'Instructiekaarten', links: [
+      { titel: 'Tankautospuit: pompbediening', url: 'https://duinwijk.example/kaart-pomp.pdf' },
+      { titel: 'Reddingsboot: te water laten', url: 'https://duinwijk.example/kaart-boot.pdf' },
+    ] },
+  ] });
+
   await api('/instellingen', 'PUT', {
     standaard_locatie: 'Kazerne Duinwijk',
     kazerne_aan: true,
