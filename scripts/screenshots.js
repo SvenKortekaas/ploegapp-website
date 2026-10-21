@@ -116,7 +116,11 @@ async function main() {
     /** Screenshot van wat er op het scherm staat; optioneel eerst naar een element scrollen. */
     async function foto(p, naam, { scroll } = {}) {
       if (scroll) {
-        await p.$eval(scroll, (el) => el.scrollIntoView({ block: 'start' }));
+        // De kopbalk van de app staat vast bovenin; scroll het element net eronder
+        await p.$eval(scroll, (el) => {
+          el.scrollIntoView({ block: 'start' });
+          window.scrollBy(0, -((document.querySelector('.kop')?.offsetHeight || 0) + 8));
+        });
         await p.waitForTimeout(100);
       }
       await p.evaluate(() => { const m = document.getElementById('melding'); if (m) m.hidden = true; });
