@@ -149,6 +149,7 @@ async function main() {
       await foto(p, 'lid-rooster');
       await ga(p, '#/ik', '#app .kaart');
       await foto(p, 'lid-ik');
+      await foto(p, 'lid-agenda', { scroll: 'h2:has-text("in je agenda")' });
       await foto(p, 'lid-mijn-oefeningen', { scroll: kaartMet('Mijn oefeningen') });
       await ga(p, '#/meldingen', '#app');
       await foto(p, 'lid-meldingen');
@@ -246,6 +247,10 @@ async function main() {
       await p.check('.oef-blok input[name="eigen_bezetting"]');
       await p.waitForSelector('.oef-blok .norm-blok:not([hidden])');
       await foto(p, 'planner-bezetting-aanpassen', { scroll: '.oef-blok .bez-voertuig' });
+      await klik(p, '#soort-keuze [data-soort="activiteit"]');
+      await p.fill('input[name="naam"]', 'Jaarafsluiting met BBQ');
+      await p.evaluate(() => window.scrollTo(0, 0));
+      await foto(p, 'planner-activiteit');
       await ga(p, '#/eerder', '.kaart');
       const vorige = await p.$eval('a[href$="/presentie"], a[href^="#/avond/"]', (a) => a.getAttribute('href').match(/\d+/)[0]);
       await ga(p, `#/avond/${vorige}/presentie`, '#opslaan');

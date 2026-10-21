@@ -170,6 +170,8 @@ async function vul(basis, beheerToken) {
   const boot = alle.find((v) => v.roepnummer === 'RB-1');
   const ts2 = alle.find((v) => v.roepnummer === '99-4532');
   const msa = alle.find((v) => v.roepnummer === 'MSA');
+  // De boot in onderhoud rond de nieuwe datum van het planscherm ("niet beschikbaar" bij het plannen)
+  await api(`/voertuigen/${boot.id}`, 'PUT', { niet_beschikbaar: { van: dag(23), tot: dag(30), reden: 'Onderhoud' } });
 
   await api('/instellingen', 'PUT', {
     standaard_locatie: 'Kazerne Duinwijk',
@@ -285,6 +287,13 @@ async function vul(basis, beheerToken) {
   // Over 18 dagen: net gepland, nog weinig reacties
   const gs = await plan(dag(18), [{ onderwerp: 'Gevaarlijke stoffen', voertuig_ids: [ts.id], oefenleider_ids: [id('Jesse')] }], { melden: true });
   await antwoorden(gs, [...ja(['Jesse', 'Anouk', 'Hanna']), ['Kim', 'misschien']]);
+
+  // Over 21 dagen: een activiteit zonder oefening (geen bezetting, alleen hoeveel er komen)
+  const bbq = await api('/avonden', 'POST', {
+    titel: 'Jaarafsluiting met BBQ', activiteit: true, datum: dag(21), start: '18:00', eind: '22:00',
+    locatie: 'Kazerne Duinwijk', ploeg_ids: ploegen, melden: false,
+  });
+  await antwoorden(bbq, [...ja(['Karin', 'Anouk', 'Chris', 'Gijs', 'Ivo', 'Jeroen', 'Niels']), ['Pim', 'misschien']]);
 
   // Afwezigheid (zonder reden: die vraagt de app bewust niet)
   await api('/afwezigheid', 'POST', { lid_id: id('Dirk'), van: dag(8), tot: dag(22) });
