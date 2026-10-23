@@ -14,15 +14,7 @@ name: Site bouwen en publiceren
 on:
   push:
   pull_request:
-  workflow_dispatch:
-  schedule:
-    # Elke nacht: nieuwste app, verse screenshots (datums in de voorbeelden lopen mee).
-    # GitHub slaat geplande runs soms over of start ze uren later; daarom drie tijdstippen (UTC).
-    - cron: '17 3 * * *'
-    - cron: '41 9 * * *'
-    - cron: '23 15 * * *'
-  repository_dispatch:
-    types: [app-bijgewerkt] # optioneel: de app-repo kan dit sturen na een uitrol
+  workflow_dispatch: # bijwerken met de nieuwste app: handmatig of via Claude (geen geplande runs, scheelt Actions-minuten)
 
 permissions:
   contents: read
@@ -124,14 +116,13 @@ jobs:
           path: uit
 
   bijhouden:
-    name: Issue en geplande run bijhouden
+    name: Issues bijhouden
     needs: bouwen
     # Altijd op main: ook om het issue te sluiten zodra alle functies op de site staan
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     permissions:
       issues: write   # issue bij een nieuwe functie zonder uitleg, of als het token bijna verloopt
-      actions: write  # geplande run actief houden
     steps:
       # Op exacte titel zoeken, niet met --search: die zoekindex loopt achter en dan kwam er elke run een nieuw issue bij
       - name: Issue bij een nieuwe functie zonder uitleg (en sluiten als alles erop staat)
@@ -165,14 +156,6 @@ jobs:
           NR=$(gh issue list --state open --limit 200 --json number,title --jq "[.[] | select(.title == \"$TITEL\")][0].number // empty")
           if [ -n "$NR" ]; then gh issue edit "$NR" --body "$TEKST"
           else gh issue create --title "$TITEL" --body "$TEKST"; fi
-
-      # GitHub zet geplande runs in publieke repo's uit na 60 dagen zonder activiteit; dit houdt ze aan
-      - name: Geplande run actief houden
-        if: github.event_name == 'schedule'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: gh api -X PUT "repos/$GH_REPO/actions/workflows/site.yml/enable" || true
 
   publiceren:
     name: Publiceren op GitHub Pages

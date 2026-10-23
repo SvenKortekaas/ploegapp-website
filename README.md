@@ -3,8 +3,10 @@
 De voorlichtingssite van **Ploegapp**: wat de app is, wat hij kan en hoe je hem gebruikt, met
 screenshots van de nieuwste versie.
 
-- **Altijd actueel.** Elke dag haalt GitHub Actions de nieuwste app op, start die met een lege
-  database, vult hem met verzonnen gegevens en maakt nieuwe screenshots.
+- **Bijwerken op verzoek.** Bij elke push naar `main`, of handmatig (Actions → "Site bouwen en
+  publiceren" → Run workflow), haalt GitHub Actions de nieuwste app op, start die met een lege
+  database, vult hem met verzonnen gegevens en maakt nieuwe screenshots. Er zijn geen geplande runs
+  (scheelt Actions-minuten).
 - **Alleen verzonnen gegevens.** Het korps "Brandweer Duinwijk" en alle namen zijn verzonnen
   (`scripts/voorbeeld.js`). Het screenshotscript stopt als er iets anders in de database staat.
 - **Geen app-code in deze repo.** De app is privé en blijft dat. Hij staat alleen tijdelijk op de
@@ -121,8 +123,8 @@ gepubliceerd wordt; daarvoor:
   bij `<script>`, `on...=`, `style=`, `<base>`, formulieren, iframes, externe bronnen, cookies of
   andere opslag op het apparaat.
 - **Workflows met zo min mogelijk rechten.** De job die de app en npm-pakketten draait, mag alleen
-  lezen en houdt geen token vast (`persist-credentials: false`). Een issue maken en de geplande run
-  aanhouden gebeurt in een aparte job zonder vreemde code. Alleen `main` mag publiceren.
+  lezen en houdt geen token vast (`persist-credentials: false`). Een issue maken gebeurt in een
+  aparte job zonder vreemde code. Alleen `main` mag publiceren.
 - **Geen installatiescripts** van npm-pakketten (`npm ci --ignore-scripts`).
 - **Acties vastgepind op een commit**, niet op een versienummer dat iemand kan verplaatsen.
   Dependabot (`.github/dependabot.yml`) houdt ze en `playwright-core` wekelijks actueel, met een

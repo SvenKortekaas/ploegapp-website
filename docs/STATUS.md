@@ -6,9 +6,10 @@ Overdracht voor wie (mens of Claude) verder werkt aan ploegapp.nl. Lees eerst `C
 
 - **Live**: https://ploegapp.nl (GitHub Pages, eigen domein, HTTPS afgedwongen). `www` en `http`
   sturen door.
-- **Elke dag** (03:17, 09:41 en 15:23 UTC) en bij elke push naar `main`: nieuwste app ophalen, screenshots met
-  verzonnen gegevens (Brandweer Duinwijk), bouwen, controleren, publiceren. Handmatig: Actions →
-  "Site bouwen en publiceren" → Run workflow.
+- **Bij elke push naar `main` en handmatig** (Actions → "Site bouwen en publiceren" → Run workflow, of
+  via Claude): nieuwste app ophalen, screenshots met verzonnen gegevens (Brandweer Duinwijk), bouwen,
+  controleren, publiceren. Geen geplande runs meer (23 oktober, op verzoek van de eigenaar: scheelt
+  Actions-minuten).
 - **Secrets** in deze repo: `PLOEGAPP_LEES_TOKEN` (alleen-lezen op de app-repo, Contents: read).
   Optioneel `VERBODEN_WOORDEN`. Het token heeft geen vervaldatum (nagekeken 19 oktober). Krijgt een
   nieuw token er wel een, dan opent de workflow twee weken van tevoren een issue "Token
