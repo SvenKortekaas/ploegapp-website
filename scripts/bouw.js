@@ -51,6 +51,7 @@ function gegevens(p, inhoud) {
       '@type': 'Organization',
       name: 'Ploegapp',
       url: SITE,
+      logo: SITE + 'logo.png',
       email: CONTACT,
       contactPoint: { '@type': 'ContactPoint', email: CONTACT, contactType: 'customer support', availableLanguage: 'nl' },
     });
@@ -141,7 +142,8 @@ function main() {
   if (ongebruikt.length) console.log(`Let op: screenshots niet gebruikt op de site: ${ongebruikt.join(', ')}`);
 
   fs.copyFileSync(path.join(SJABLOON, 'style.css'), path.join(UIT, 'style.css'));
-  fs.copyFileSync(path.join(SJABLOON, 'favicon.svg'), path.join(UIT, 'favicon.svg'));
+  // Iconen in de hoofdmap: favicon (SVG, en PNG voor browsers zonder SVG), iPhone-beginscherm en logo voor Google
+  for (const f of ['favicon.svg', 'favicon-96.png', 'apple-touch-icon.png', 'logo.png']) fs.copyFileSync(path.join(SJABLOON, f), path.join(UIT, f));
   // Alle zoekmachines en AI-zoekdiensten mogen alles lezen (er staan alleen verzonnen gegevens op)
   fs.writeFileSync(path.join(UIT, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`);
   fs.writeFileSync(path.join(UIT, '.nojekyll'), '');

@@ -141,6 +141,9 @@ formulieren of inlog is dat hier geen echt risico.
 
 - een vast adres (`canonical`), Open Graph-gegevens en een deelafbeelding van 1200×630
   (`deelbeeld.png`, elke build opnieuw gemaakt met het nieuwste screenshot);
+- een favicon in de hoofdmap: `favicon.svg` (het logo van de app), `favicon-96.png` voor browsers
+  zonder SVG en `apple-touch-icon.png` (180×180) voor het beginscherm van een iPhone. De PNG's staan
+  in `sjabloon/` en zijn gemaakt uit `favicon.svg`; verandert het logo, maak ze dan opnieuw;
 - gestructureerde gegevens (JSON-LD): de app en het contactadres op de voorpagina, en de vragen
   en antwoorden van `vragen.html` (elke `<details>` met `<summary>` wordt een vraag);
 - `sitemap.xml` met alle pagina's, en `robots.txt` die ernaar verwijst. Alle zoekmachines en
