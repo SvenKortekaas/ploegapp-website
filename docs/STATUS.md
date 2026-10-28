@@ -92,6 +92,8 @@ Statische site zonder scripts, cookies of formulieren; HTTPS afgedwongen, `http`
 door, geen `.git` of andere verborgen bestanden gepubliceerd. Workflows aangescherpt (minimale
 rechten, acties vastgepind, geen installatiescripts) en bewaakt door CodeQL en Dependabot; zie
 README, "Beveiliging". Bij een wijziging aan workflows of sjabloon: deze maatregelen niet verzwakken.
+Sinds 28 oktober (naar voorbeeld van de app): gitleaks en `npm audit` in `beveiliging.yml`, publiceren
+wacht erop; `scripts/workflows.test.js` bewaakt de workflowregels.
 - [x] Mail voor `info@ploegapp.nl` regelen: komt sinds 19 oktober binnen bij Fastmail.
 - [x] Google Search Console: domein `ploegapp.nl` geverifieerd (TXT-record bij Cloud86) en
       `https://ploegapp.nl/sitemap.xml` ingestuurd en gelezen (21 oktober).

@@ -46,6 +46,13 @@ embeds, pixels of CDN's. De Content-Security-Policy blijft alleen bronnen van de
 toestaan (`'self'`). `scripts/controleer.js` dwingt
 dit af bij elke build; zwak die controle niet af.
 
+## Controles
+
+Nooit een controle (workflow, test, scan) uitzetten, overslaan of een melding wegmoffelen om groen te
+worden. Oplossen, of alleen bij een aangetoond vals alarm die ene melding onderdrukken, met de reden
+erbij. Nieuwe workflow: acties vast op een commit, bovenaan `permissions: contents: read`, checkout met
+`persist-credentials: false`; `scripts/workflows.test.js` bewaakt dit.
+
 Komt er ooit toch iets bij, toets het dan eerst aan de cookieregels. Een banner alleen als hij aan
 alle regels voldoet: weigeren even makkelijk als accepteren, niets laden vóór de keuze, keuzes per
 doel, intrekken altijd mogelijk, nee is nee, geen cookiemuur, toestemming vastleggen, B1-taal en

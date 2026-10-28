@@ -4,7 +4,8 @@
 #  2. Start de app met een lege database, vult die met fictieve gegevens en maakt screenshots.
 #  3. Bouwt de statische site en controleert hem: geen cookies, geen scripts, geen externe verzoeken,
 #     alleen html/css/png/svg/txt.
-#  4. Alleen vanaf main: publiceren naar GitHub Pages.
+#  4. Beveiligingsscans (beveiliging.yml): geheimen in de historie en lekken in npm-pakketten.
+#  5. Alleen vanaf main en als alles groen is: publiceren naar GitHub Pages.
 # Mislukt een stap, dan blijft de vorige versie van de site gewoon online.
 #
 # Eenmalig nodig: secret PLOEGAPP_LEES_TOKEN (fine-grained token, alleen de repo ploegapp,
@@ -115,6 +116,10 @@ jobs:
         with:
           path: uit
 
+  beveiliging:
+    name: Beveiligingsscans
+    uses: ./.github/workflows/beveiliging.yml
+
   bijhouden:
     name: Issues bijhouden
     needs: bouwen
@@ -159,7 +164,7 @@ jobs:
 
   publiceren:
     name: Publiceren op GitHub Pages
-    needs: bouwen
+    needs: [bouwen, beveiliging] # ook de beveiligingsscans moeten groen zijn
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     permissions:

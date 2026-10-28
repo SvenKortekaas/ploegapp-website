@@ -29,6 +29,7 @@ screenshots van de nieuwste versie.
 | `scripts/bouw.js` | Bouwt de site in `uit/` |
 | `scripts/controleer.js` | Privacy- en kwaliteitscontrole vóór publicatie |
 | `scripts/controleer.test.js` | Test dat die controle echt afkeurt (`npm test`, ook in de workflow) |
+| `scripts/workflows.test.js` | Test de beveiligingsregels van de workflows (`npm test`) |
 | `scripts/dekking.js` | Nieuwe functie in de README van de app zonder uitleg hier? Dan komt er een issue. |
 
 ## Tekst aanpassen
@@ -131,6 +132,15 @@ gepubliceerd wordt; daarvoor:
   week wachttijd na elke nieuwe versie.
 - **CodeQL** (`.github/workflows/codeql.yml`) scant de workflows en scripts bij elke push en elke
   maandag; bevindingen staan onder Security → Code scanning.
+- **Beveiligingsscans** (`.github/workflows/beveiliging.yml`) bij elke push en elke maandag:
+  gitleaks zoekt geheimen in de hele git-historie, `npm audit` lekken met ernst hoog of kritiek in
+  de npm-pakketten (ook die van Lighthouse). Publiceren wacht hierop. Rood door `npm audit`? Dan
+  `npm audit fix` (voor Lighthouse met `--prefix .github/lighthouse`).
+- **`scripts/workflows.test.js`** (`npm test`) bewaakt de regels hierboven: acties vast op een
+  commit, bovenaan alleen leesrechten, geen token in checkout, publiceren wacht op de scans.
+- **Nooit een controle uitzetten, overslaan of een melding wegmoffelen** om groen te worden. Een
+  melding oplossen, of alleen bij een aangetoond vals alarm die ene melding onderdrukken, met de
+  reden erbij.
 
 Wat niet kan op GitHub Pages: eigen HTTP-headers (zoals HSTS en `frame-ancestors`). Zonder
 formulieren of inlog is dat hier geen echt risico.

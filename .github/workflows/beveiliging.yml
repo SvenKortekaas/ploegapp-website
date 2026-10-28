@@ -1,0 +1,59 @@
+# Beveiligingsscans: geheimen in de hele git-historie (gitleaks) en bekende lekken in de npm-pakketten
+# (npm audit, ook die van Lighthouse). Elk gevonden geheim en elk lek met ernst hoog of kritiek maakt de
+# run rood.
+#
+# Wanneer: bij elke push en pull request via site.yml (publiceren wacht op deze scans), elke maandag
+# (er worden steeds nieuwe lekken bekend, ook als er niets verandert) en handmatig.
+#
+# gitleaks: vaste versie, gedownload met een gecontroleerd controlegetal (SHA-256). Bijwerken: kies een
+# release die minstens twee weken oud is, zet het nummer bij VERSIE en neem het controlegetal van
+# gitleaks_<versie>_linux_x64.tar.gz over uit gitleaks_<versie>_checksums.txt van die release.
+name: Beveiligingsscans
+
+on:
+  schedule:
+    - cron: '17 5 * * 1' # elke maandag
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Geheimen (gitleaks)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # de hele historie: ook een geheim dat ooit is weggehaald, staat er nog in
+          persist-credentials: false
+      - name: gitleaks installeren
+        env:
+          VERSIE: 8.30.1
+          SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" "https://github.com/gitleaks/gitleaks/releases/download/v${VERSIE}/gitleaks_${VERSIE}_linux_x64.tar.gz"
+          echo "$SHA256  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP/bin" gitleaks
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      # --redact: het geheim zelf komt niet in de log (de log van een publieke repo is openbaar)
+      - run: gitleaks git --redact --verbose --exit-code 1 .
+
+  npm-audit:
+    name: Lekken in npm-pakketten (npm audit)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      # Leest alleen de lockfiles; installeert niets. Oplossen: npm audit fix (met --prefix voor Lighthouse).
+      - name: Site (playwright-core)
+        run: npm audit --audit-level=high
+      - name: Lighthouse
+        if: ${{ !cancelled() }}
+        run: npm audit --audit-level=high --prefix .github/lighthouse
