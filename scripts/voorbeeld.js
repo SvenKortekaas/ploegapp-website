@@ -14,7 +14,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const net = require('node:net');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 
 // Bewust geen map met een punt (.app): Express (sendFile) weigert dan bestanden uit dat pad, en het
 // kazernescherm gaf daardoor een 404
@@ -106,28 +106,35 @@ async function startApp() {
   };
   process.on('exit', () => proces.kill());
 
-  // Wachten tot de inloglink van de eerste beheerder in het logbestand staat
+  // Wachten tot de app draait. De inloglink van de eerste beheerder staat niet in het log van de app;
+  // die geeft alleen het noodscript van de app (npm run beheerder). Uitvoer opgevangen, niet in het CI-log.
   const basis = `http://127.0.0.1:${poort}`;
   for (let i = 0; i < 100; i++) {
-    const m = fs.readFileSync(log, 'utf8').match(/\?t=([\w-]+)/);
-    if (m) {
-      const r = await fetch(`${basis}/gezond`).catch(() => null);
-      if (r?.ok) return { basis, token: m[1], stop };
+    const r = await fetch(`${basis}/gezond`).catch(() => null);
+    if (r?.ok) {
+      const uitvoer = spawnSync(process.execPath, ['--no-warnings', 'scripts/beheerder.js'], {
+        cwd: APP_PAD,
+        env: { PATH: process.env.PATH, HOME: map, TZ: 'Europe/Amsterdam', DB_PAD: dbPad, BASE_URL },
+        encoding: 'utf8',
+      }).stdout;
+      const m = String(uitvoer).match(/\?t=([\w-]+)/);
+      if (m) return { basis, token: m[1], stop };
+      break;
     }
     if (proces.exitCode !== null) break;
     await new Promise((r) => setTimeout(r, 100));
   }
   stop();
-  throw new Error('De app startte niet. Draai lokaal met dezelfde APP_PAD om te zien waarom (het log blijft bewust uit het CI-log).');
+  throw new Error('De app startte niet, of scripts/beheerder.js van de app gaf geen inloglink. Draai lokaal met dezelfde APP_PAD om te zien waarom (het log blijft bewust uit het CI-log).');
 }
 
 // ---------- vullen via de API ----------
 
-function apiVan(basis, token) {
+function apiVan(basis, token, pincode) {
   return async (pad, methode = 'GET', body) => {
     const r = await fetch(`${basis}/api${pad}`, {
       method: methode,
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(pincode && { 'X-Pincode': pincode }) },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     const data = r.status === 204 ? null : await r.json();
@@ -137,13 +144,16 @@ function apiVan(basis, token) {
 }
 
 async function vul(basis, beheerToken) {
-  const api = apiVan(basis, beheerToken);
+  let api = apiVan(basis, beheerToken);
   const ik = await api('/ik');
+  // Beheren kan alleen met een pincode (verzonnen); de ontgrendeling gaat mee met elk verzoek
+  const { sessie } = await api('/ik/pincode', 'POST', { nieuw: '246810' });
+  api = apiVan(basis, beheerToken, sessie);
   const functie = Object.fromEntries(ik.functies.map((f) => [f.afkorting, f.id]));
   const ploegen = ik.ploegen.map((p) => p.id).sort((a, b) => a - b);
 
   // Leden
-  const leden = { [BEHEERDER]: { id: ik.lid.id, token: beheerToken } };
+  const leden = { [BEHEERDER]: { id: ik.lid.id, token: beheerToken, pincode: sessie } };
   await api(`/leden/${ik.lid.id}`, 'PUT', { naam: BEHEERDER, ploeg_id: ploegen[0], rol: 'beheerder', actief: true, functie_ids: [functie.BV] });
   for (const [naam, ploeg, functies, rol = 'lid'] of LEDEN) {
     const l = await api('/leden', 'POST', { naam, ploeg_id: ploegen[ploeg - 1], rol, actief: true, functie_ids: functies.map((f) => functie[f]) });
@@ -328,8 +338,8 @@ async function vul(basis, beheerToken) {
 }
 
 /** Vangnet: alleen doorgaan als er uitsluitend fictieve gegevens in de app staan. */
-async function controleerFictief(basis, beheerToken) {
-  const api = apiVan(basis, beheerToken);
+async function controleerFictief(basis, beheerToken, pincode) {
+  const api = apiVan(basis, beheerToken, pincode);
   const namen = (await api('/leden')).map((l) => l.naam);
   const vreemd = namen.filter((n) => !ALLE_NAMEN.includes(n));
   if (vreemd.length || namen.length !== ALLE_NAMEN.length) {

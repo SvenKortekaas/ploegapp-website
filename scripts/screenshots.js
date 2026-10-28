@@ -51,7 +51,7 @@ async function main() {
   const gemaakt = [];
   try {
     const g = await vul(app.basis, app.token);
-    await controleerFictief(app.basis, app.token);
+    await controleerFictief(app.basis, app.token, g.leden.Karin.pincode);
 
     /** Telefoon van een (fictief) lid. Zonder naam: niet ingelogd. `welkom`: met de welkomstkaart van de eerste keer. */
     async function telefoon(naam, { iphone = false, donker = false, breed = false, welkom = false, opslag = {} } = {}) {
@@ -78,8 +78,10 @@ async function main() {
         if (!iphone) await context.addInitScript(() => { try { localStorage.setItem('geinstalleerd', '1'); } catch {} });
         // Welkomstkaart al "gezien" (de hoogste rol, dus voor iedereen), behalve waar we hem juist willen laten zien
         if (!welkom) await context.addInitScript(() => { try { localStorage.setItem('welkom-gezien', 'beheerder'); } catch {} });
-        // Voorkeuren die de app op het toestel onthoudt (bijv. de weergave van het indelen)
-        await context.addInitScript((o) => { try { for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v); } catch {} }, opslag);
+        // Voorkeuren die de app op het toestel onthoudt (bijv. de weergave van het indelen), en bij de
+        // beheerder de ontgrendeling met de pincode
+        const pincode = g.leden[naam].pincode && { 'pincode-sessie': g.leden[naam].pincode };
+        await context.addInitScript((o) => { try { for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v); } catch {} }, { ...pincode, ...opslag });
         await p.goto(`${app.basis}/?t=${g.leden[naam].token}`);
         await p.waitForSelector('#tabbalk:not([hidden])');
         await p.waitForLoadState('networkidle');
@@ -314,7 +316,7 @@ async function main() {
       await foto(p, 'beheer-instellingen');
       await ga(p, '#/beheer/status', '.status-lijst');
       await foto(p, 'beheer-status');
-      // Pincode voor beheer (onder Ik). Als laatste: daarna zou beheer om de pincode vragen.
+      // Pincode voor beheer (onder Ik); voorbeeld.js heeft hem ingesteld en dit toestel ontgrendeld
       await ga(p, '#/ik', '#pincode-kaart');
       await foto(p, 'beheer-pincode', { scroll: 'h2:has(+ #pincode-kaart)' });
       await p.context().close();
