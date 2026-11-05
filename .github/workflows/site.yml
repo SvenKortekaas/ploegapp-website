@@ -34,11 +34,23 @@ jobs:
       contents: read
     outputs:
       dekking: ${{ steps.dekking.outputs.rapport }}
+      opmaak: ${{ steps.opmaak.outputs.veranderd }}
       token_verloopt: ${{ steps.token.outputs.dagen }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0 # voor de vergelijking met de vorige versie hieronder
+
+      # Lighthouse alleen na een push die pagina's of opmaak verandert (onbekende vorige versie telt als veranderd)
+      - name: Pagina's of opmaak veranderd?
+        id: opmaak
+        if: github.event_name == 'push'
+        env:
+          VOOR: ${{ github.event.before }}
+        run: |
+          if git diff --quiet "$VOOR" HEAD -- inhoud sjabloon scripts/bouw.js 2>/dev/null; then echo "veranderd=nee" >> "$GITHUB_OUTPUT"
+          else echo "veranderd=ja" >> "$GITHUB_OUTPUT"; fi
 
       # Vangnet: er mag nooit code van de app in deze publieke repo staan
       - name: Geen app-code in deze repo
@@ -179,3 +191,11 @@ jobs:
     steps:
       - id: uitrol
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  lighthouse:
+    name: Lighthouse na het publiceren
+    needs: [bouwen, publiceren]
+    if: needs.bouwen.outputs.opmaak == 'ja'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/lighthouse.yml

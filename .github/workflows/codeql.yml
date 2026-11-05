@@ -2,12 +2,14 @@
 # Bevindingen staan onder Security → Code scanning.
 name: Beveiligingsscan
 
+# Alleen als er code verandert die CodeQL scant (geen vaste wekelijkse run: scheelt Actions-minuten)
 on:
   push:
     branches: [main]
+    paths: ['.github/workflows/**', 'scripts/**', '.github/codeql/**']
   pull_request:
-  schedule:
-    - cron: '41 4 * * 1' # elke maandag, ook als er niets verandert (nieuwe regels in CodeQL)
+    paths: ['.github/workflows/**', 'scripts/**', '.github/codeql/**']
+  workflow_dispatch:
 
 permissions:
   contents: read

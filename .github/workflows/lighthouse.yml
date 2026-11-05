@@ -1,12 +1,12 @@
-# Meet de live site elke week met Lighthouse (het meetprogramma van Google): vindbaarheid (SEO),
+# Meet de live site met Lighthouse (het meetprogramma van Google), na het publiceren als pagina's of opmaak
+# veranderden (site.yml roept deze workflow aan), of met de hand: vindbaarheid (SEO),
 # toegankelijkheid en goede praktijken moeten 100 zijn, snelheid minimaal 90. Zakt er iets, dan wordt
 # deze workflow rood en stuurt GitHub de eigenaar een mail. Zie scripts/lighthouse.js.
 # Lighthouse staat vast op een versie in .github/lighthouse/ (met lockfile); Dependabot houdt hem bij.
 name: Lighthouse
 
 on:
-  schedule:
-    - cron: '29 5 * * 1' # elke maandag
+  workflow_call:
   workflow_dispatch:
 
 permissions:

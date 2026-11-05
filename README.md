@@ -130,8 +130,8 @@ gepubliceerd wordt; daarvoor:
 - **Acties vastgepind op een commit**, niet op een versienummer dat iemand kan verplaatsen.
   Dependabot (`.github/dependabot.yml`) houdt ze en `playwright-core` wekelijks actueel, met een
   week wachttijd na elke nieuwe versie.
-- **CodeQL** (`.github/workflows/codeql.yml`) scant de workflows en scripts bij elke push en elke
-  maandag; bevindingen staan onder Security → Code scanning.
+- **CodeQL** (`.github/workflows/codeql.yml`) scant de workflows en scripts bij een push of pull request
+  die ze verandert (geen vaste wekelijkse run); bevindingen staan onder Security → Code scanning.
 - **Beveiligingsscans** (`.github/workflows/beveiliging.yml`) bij elke push en elke maandag:
   gitleaks zoekt geheimen in de hele git-historie, `npm audit` lekken met ernst hoog of kritiek in
   de npm-pakketten (ook die van Lighthouse). Publiceren wacht hierop. Rood door `npm audit`? Dan
@@ -164,7 +164,8 @@ Screenshots staan als WebP op de site (ongeveer de helft van PNG).
 **Zo blijft het goed:** `scripts/controleer.js` keurt de site af bij een titel van meer dan 60 of
 een beschrijving van meer dan 160 tekens (of te kort, of dubbel), niet precies één `h1`, een
 ontbrekend canonical-adres of Open Graph-gegeven, een pagina die niet in de sitemap staat, ongeldige
-gestructureerde gegevens of een afbeelding boven 250 kB. Elke maandag meet
+gestructureerde gegevens of een afbeelding boven 250 kB. Na elke publicatie waarbij pagina's of
+opmaak veranderden (en met de hand: Actions → Lighthouse → Run workflow) meet
 `.github/workflows/lighthouse.yml` de live site met Lighthouse: vindbaarheid, toegankelijkheid en
 goede praktijken moeten 100 zijn, snelheid minimaal 90. Lukt dat niet, dan wordt de workflow rood en
 krijg je een mail van GitHub.

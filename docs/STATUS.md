@@ -83,7 +83,7 @@ back-upopslag nagaan (AVG).
 
 Canonical, Open Graph met deelafbeelding, gestructureerde gegevens, sitemap, WebP-afbeeldingen;
 titels en beschrijvingen herschreven. Lighthouse lokaal: 100 op vindbaarheid, toegankelijkheid,
-goede praktijken en snelheid, op alle pagina's. Bewaakt door `controleer.js` en wekelijks Lighthouse
+goede praktijken en snelheid, op alle pagina's. Bewaakt door `controleer.js` en Lighthouse na elke wijziging aan pagina's of opmaak
 (README, "Vindbaarheid").
 
 ## Beveiliging (1 oktober nagekeken)
@@ -97,8 +97,7 @@ wacht erop; `scripts/workflows.test.js` bewaakt de workflowregels.
 - [x] Mail voor `info@ploegapp.nl` regelen: komt sinds 19 oktober binnen bij Fastmail.
 - [x] Google Search Console: domein `ploegapp.nl` geverifieerd (TXT-record bij Cloud86) en
       `https://ploegapp.nl/sitemap.xml` ingestuurd en gelezen (21 oktober).
-- [ ] Bing Webmaster Tools: *Importeren vanuit Google Search Console*, dan komen domein en sitemap
-      vanzelf mee (eigenaar).
+- [x] Bing Webmaster Tools: geïmporteerd vanuit Google Search Console (november).
 
 ## Audit (Ponytail)
 
